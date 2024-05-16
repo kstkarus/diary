@@ -28,7 +28,7 @@ class AuthWidget extends StatelessWidget {
                 onPressed: () {
                   submitFunction();
                 },
-                child: Text("Submit"),
+                child: const Text("Submit"),
             )
           ],
         ),

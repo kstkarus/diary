@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'auth_widget.dart';
 import 'main_widget.dart';
@@ -36,8 +35,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isNumberProvided = false;
   late TextEditingController _controller;
 
-  int _currentPageIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -66,38 +63,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: _isNumberProvided ? MainWidget() : AuthWidget(
-        textController: _controller,
-        submitFunction: _submitPressed,
-      ),
-      bottomNavigationBar: !_isNumberProvided ?  null : buildNavigationBar(),
-    );
+    return !_isNumberProvided ? buildAuthPage(context) : MainWidget();
   }
 
-  NavigationBar buildNavigationBar() {
-    return NavigationBar(
-      onDestinationSelected: (int index) {
-        setState(() {
-          _currentPageIndex = index;
-        });
-      },
-      destinations: const [
-        NavigationDestination(
-          selectedIcon: Icon(Icons.grade),
-          icon: Icon(Icons.grade_outlined),
-          label: "Scores",
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.settings),
-          icon: Icon(Icons.settings_outlined),
-          label: "Settings",
-        )
-      ],
-    );
+  Scaffold buildAuthPage(BuildContext context) {
+    return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      title: Text(widget.title),
+    ),
+    body: AuthWidget(
+      textController: _controller,
+      submitFunction: _submitPressed,
+    ),
+  );
   }
 }
