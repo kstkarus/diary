@@ -17,12 +17,12 @@ class AuthWidget extends StatelessWidget {
             TextField(
               controller: textController,
               decoration: const InputDecoration(
-                hintText: "Input group's number",
+                hintText: "Type here",
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(
-              height: 5,
+              height: 10,
             ),
             ElevatedButton(
                 onPressed: () {

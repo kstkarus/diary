@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_widget.dart';
 import 'main_widget.dart';
 import 'http_parser.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,16 +14,27 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  static final _defaultLightColor = ColorScheme.fromSwatch(primarySwatch: Colors.lightGreen);
+  static final _defaultDarkColor = ColorScheme.fromSwatch(primarySwatch: Colors.lightGreen, brightness: Brightness.dark);
+  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Diary',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Diary'),
+    return DynamicColorBuilder(
+      builder: (lightColor, darkColor) {
+        return MaterialApp(
+          title: 'Diary',
+          theme: ThemeData(
+            colorScheme: lightColor ?? _defaultLightColor,
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            colorScheme: darkColor ?? _defaultDarkColor,
+            useMaterial3: true,
+          ),
+          themeMode: ThemeMode.light,
+          home: const MyHomePage(title: 'Diary'),
+        );
+      },
     );
   }
 }
@@ -49,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _isNumberProvided = true;
         _groupID = groups[0]["id"].toString();
         prefs.setInt("groupID", groups[0]["id"]);
+        prefs.setInt("groupNumber", int.parse(_controller.text));
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
