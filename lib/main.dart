@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_widget.dart';
 import 'main_widget.dart';
 import 'http_parser.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -34,21 +37,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _isNumberProvided = false;
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (!_isNumberProvided) {
-      _controller = TextEditingController();
-    }
-  }
+  final TextEditingController _controller = TextEditingController();
+  late String _groupID;
 
   void _submitPressed() async {
-    if (int.tryParse(_controller.text) != null && await checkGroup(_controller.text)) {
+    List<dynamic> groups = await getGroups(_controller.text);
+    final prefs = await SharedPreferences.getInstance();
+
+    if (int.tryParse(_controller.text) != null && groups[0]["group"] == _controller.text) {
       setState(() {
         _isNumberProvided = true;
+        _groupID = groups[0]["id"].toString();
+        prefs.setInt("groupID", groups[0]["id"]);
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -61,7 +61,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return !_isNumberProvided ? buildAuthPage(context) : MainWidget();
+    //return !_isNumberProvided ? buildAuthPage(context) : MainWidget(groupID: _groupID,);
+    return FutureBuilder(
+        future: SharedPreferences.getInstance(),
+        builder: (context, v) {
+          if (v.hasData) {
+            int? id = v.data!.getInt("groupID") ?? 0;
+
+            return id == 0 ? buildAuthPage(context) : MainWidget(groupID: id.toString());
+          } else if (v.hasError) {
+            return Text("An error occurred: ${v.error}");
+          }
+
+          return const CircularProgressIndicator();
+        },
+    );
   }
 
   Scaffold buildAuthPage(BuildContext context) {

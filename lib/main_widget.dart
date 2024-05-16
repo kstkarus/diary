@@ -4,7 +4,9 @@ import 'schedule_widget.dart';
 import 'http_parser.dart';
 
 class MainWidget extends StatefulWidget {
-  const MainWidget({super.key});
+  const MainWidget({super.key, required this.groupID});
+
+  final String groupID;
 
   @override
   State<MainWidget> createState() => _MainWidgetState();
@@ -12,16 +14,24 @@ class MainWidget extends StatefulWidget {
 
 class _MainWidgetState extends State<MainWidget> {
   int _currentPageIndex = 0;
-
+  late Future<Map<String, dynamic>> _schedule;
+  
+  @override
+  void initState() {
+    super.initState();
+    
+    _schedule = getSchedule(widget.groupID);
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Welcome back, *username*"),
+        title: const Text("Welcome back, Student!"),
       ),
       body: [
-        SchedulePage(),
+        SchedulePage(schedule: _schedule),
         SettingsPage(),
       ][_currentPageIndex],
       bottomNavigationBar: buildNavigationBar(),
