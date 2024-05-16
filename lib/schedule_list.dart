@@ -15,6 +15,8 @@ class ScheduleList extends StatelessWidget {
         return InfoTile(
           text: schedule[index.toString()][i]["disciplName"],
           time: schedule[index.toString()][i]["dayTime"],
+          room: schedule[index.toString()][i]["audNum"],
+          type: schedule[index.toString()][i]["disciplType"]
         );
       },
     ) : const Center(child: Text("Beer time"));

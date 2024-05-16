@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<dynamic> groups = await getGroups(_controller.text);
     final prefs = await SharedPreferences.getInstance();
 
-    if (int.tryParse(_controller.text) != null && groups[0]["group"] == _controller.text) {
+    if (int.tryParse(_controller.text) != null && groups.isNotEmpty && groups[0]["group"] == _controller.text) {
       setState(() {
         _isNumberProvided = true;
         _groupID = groups[0]["id"].toString();

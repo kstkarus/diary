@@ -17,7 +17,7 @@ class AuthWidget extends StatelessWidget {
             TextField(
               controller: textController,
               decoration: const InputDecoration(
-                hintText: "Input number",
+                hintText: "Input group's number",
                 border: OutlineInputBorder(),
               ),
             ),
