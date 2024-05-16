@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'auth_widget.dart';
 import 'main_widget.dart';
+import 'http_parser.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,21 +45,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _submitPressed() {
-    // проверка на номер группы
-    // если корректна, то запись в бд
-    if (int.tryParse(_controller.text) == null) {
+  void _submitPressed() async {
+    if (int.tryParse(_controller.text) != null && await checkGroup(_controller.text)) {
+      setState(() {
+        _isNumberProvided = true;
+      });
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid group's number. Try again"),
-        )
+          const SnackBar(
+            content: Text("Invalid group's number. Try again"),
+          )
       );
-      return;
     }
-
-    setState(() {
-      _isNumberProvided = true;
-    });
   }
 
   @override

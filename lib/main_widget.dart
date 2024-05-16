@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'settings_widget.dart';
 import 'schedule_widget.dart';
+import 'http_parser.dart';
 
 class MainWidget extends StatefulWidget {
   const MainWidget({super.key});
