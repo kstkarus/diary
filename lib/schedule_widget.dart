@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'schedule_list.dart';
+import 'package:week_number/iso.dart';
+
+bool getWeekParity(DateTime date) {
+  return date.weekNumber % 2 == 0;
+}
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key, required this.schedule});
@@ -13,6 +18,8 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage> {
   int _weekday = DateTime.now().weekday;
+  bool _weekParity = getWeekParity(DateTime.now());
+  DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,12 @@ class _SchedulePageState extends State<SchedulePage> {
               future: widget.schedule,
               builder: (context, v) {
                 if (v.hasData) {
-                    return ScheduleList(schedule: v.data!, index: _weekday); // 1 - пн, 2 - вт, ..., 6 - сб
+                    return ScheduleList(
+                      schedule: v.data!,
+                      index: _weekday,
+                      parity: _weekParity,
+                      date: _selectedDate,
+                    ); // 1 - пн, 2 - вт, ..., 6 - сб
                 } else if (v.hasError) {
                   return Text("${v.error}");
                 }
@@ -43,6 +55,8 @@ class _SchedulePageState extends State<SchedulePage> {
       onDateChange: (selectedDate) {
         setState(() {
           _weekday = selectedDate.weekday;
+          _weekParity = getWeekParity(selectedDate);
+          _selectedDate = selectedDate;
         });
       },
       //activeColor: const Color(0xff85A389),

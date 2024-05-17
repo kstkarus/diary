@@ -39,6 +39,8 @@ dependencies:
   easy_date_timeline: ^1.0.7
   shared_preferences: ^2.2.3
   dynamic_color: ^1.7.0
+  week_number: ^1.1.0
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
