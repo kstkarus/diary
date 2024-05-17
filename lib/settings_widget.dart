@@ -15,7 +15,7 @@ class SettingsPage extends StatelessWidget {
                 final prefs = await SharedPreferences.getInstance();
                 prefs.setInt("groupID", 0);
               },
-              child: Text("Reset group")
+              child: const Text("Reset group")
           )
         ],
       ),

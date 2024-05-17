@@ -99,9 +99,10 @@ class ScheduleList extends StatelessWidget {
       child: ListTile(
         title: Text(schedule[index.toString()][i]["disciplName"]),
         subtitle: Wrap(
-          spacing: 15,
+          spacing: 10,
           children: [
             Text(schedule[index.toString()][i]["dayTime"].trim()),
+            Text(schedule[index.toString()][i]['buildNum'].trim()),
             Text(schedule[index.toString()][i]["audNum"].trim()),
             Text(schedule[index.toString()][i]["disciplType"].trim()),
             Text(

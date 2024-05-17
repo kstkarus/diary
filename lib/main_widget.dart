@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'settings_widget.dart';
 import 'schedule_widget.dart';
+import 'exams_widget.dart';
 import 'http_parser.dart';
 
 class MainWidget extends StatefulWidget {
@@ -31,6 +32,7 @@ class _MainWidgetState extends State<MainWidget> {
       ),
       body: [
         SchedulePage(schedule: _schedule),
+        ExamsPage(groupID: widget.groupID),
         SettingsPage(),
       ][_currentPageIndex],
       bottomNavigationBar: buildNavigationBar(),
@@ -50,6 +52,11 @@ class _MainWidgetState extends State<MainWidget> {
           selectedIcon: Icon(Icons.schedule),
           icon: Icon(Icons.schedule_outlined),
           label: "Schedule",
+        ),
+        NavigationDestination(
+          selectedIcon: Icon(Icons.book),
+          icon: Icon(Icons.book_outlined),
+          label: "Exams",
         ),
         NavigationDestination(
           selectedIcon: Icon(Icons.settings),
