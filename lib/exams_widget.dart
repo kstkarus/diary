@@ -51,9 +51,11 @@ class _ExamsPageState extends State<ExamsPage> {
         subtitle: Wrap(
           spacing: 10,
           children: [
+            Text(data['examDate'].trim()),
             Text(data['examTime'].trim()),
             Text(data['buildNum'].trim()),
             Text(data['audNum'].trim()),
+            Text(data['prepodName'].trim()),
           ],
         ),
       ),
