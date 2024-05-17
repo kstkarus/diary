@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'auth_widget.dart';
 import 'main_widget.dart';
 import 'http_parser.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
         _isNumberProvided = true;
         _groupID = groups[0]["id"].toString();
         prefs.setInt("groupID", groups[0]["id"]);
-        prefs.setInt("groupNumber", int.parse(_controller.text));
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

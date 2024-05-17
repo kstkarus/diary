@@ -1,6 +1,6 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 Future<List<dynamic>> getGroups(String group) async {
   final groupsUrl = Uri.parse("https://kai.ru/raspisanie");
@@ -16,15 +16,27 @@ Future<List<dynamic>> getGroups(String group) async {
     "query": group,
   };
 
-  final response = await http.post(groupsUrl, body: groups);
+  try {
+    final response = await http.post(groupsUrl, body: groups);
 
-  if (response.statusCode == 200) {
-    List<dynamic> groupsDecode = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      List<dynamic> groupsDecode = jsonDecode(response.body);
 
-    return groupsDecode;
+      return groupsDecode;
+    }
+  } catch(e) {
+    //nothing ig
   }
 
   return [];
+}
+
+Future<Map<String, dynamic>>  getCachedSchedule() async {
+  final prefs = await SharedPreferences.getInstance();
+  String cachedSchedule = prefs.getString("cachedSchedule") ?? "{'0':[]}";
+
+  Map<String, dynamic> groupsDecode = jsonDecode(cachedSchedule);
+  return groupsDecode;
 }
 
 Future<Map<String, dynamic>> getSchedule(String groupID) async {
@@ -41,13 +53,18 @@ Future<Map<String, dynamic>> getSchedule(String groupID) async {
     "groupId": groupID,
   };
 
-  final response = await http.post(groupsUrl, body: groups);
+  try {
+    final response = await http.post(groupsUrl, body: groups);
 
-  if (response.statusCode == 200) {
-    Map<String, dynamic> groupsDecode = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString("cachedSchedule", response.body);
 
-    return groupsDecode;
+      Map<String, dynamic> groupsDecode = jsonDecode(response.body);
+      return groupsDecode;
+    }
+  } catch (e) {
+    //
   }
-
-  return {"0":[]};
+  return getCachedSchedule();
 }

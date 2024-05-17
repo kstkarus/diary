@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 
 bool validateLesson(String info, bool parity, DateTime date) {
   info = info.trim();
-  String currentDate = DateFormat('dd.MM').format(date);
 
   switch (info) {
     case "":
@@ -17,6 +16,8 @@ bool validateLesson(String info, bool parity, DateTime date) {
     case "чет/неч":
       return true;
     default:
+      String currentDate = DateFormat('dd.MM').format(date);
+
       String infoSpaceless = info.replaceAll(" ", "");
       List<String> groups = infoSpaceless.split("/");
 
@@ -32,17 +33,34 @@ bool validateLesson(String info, bool parity, DateTime date) {
   }
 }
 
-String convertString(String info, bool parity) {
+String convertString(String info, bool parity, DateTime date) {
+  String firstTemplate = "1 группа";
+  String secondTemplate = "2 группа";
+
   if (info.length == 7) {
     info = info.substring(0, 3);
 
     switch (info) {
       case "неч":
-        info = !parity ? "1 группа" : "2 группа";
+        info = !parity ? firstTemplate : secondTemplate;
         break;
       case "чет":
-        info = parity ? "1 группа" : "2 группа";
+        info = parity ? firstTemplate : secondTemplate;
         break;
+    }
+  } else if (info.length > 7) {
+    String currentDate = DateFormat('dd.MM').format(date);
+
+    String infoSpaceless = info.replaceAll(" ", "");
+    List<String> groups = infoSpaceless.split("/");
+
+    for(int i = 0; i < groups.length; i++) {
+      for(var j in groups[i].split(";")) {
+        if (currentDate == j) {
+          info = i == 0 ? firstTemplate : secondTemplate;
+          return info;
+        }
+      }
     }
   }
 
@@ -73,7 +91,7 @@ class ScheduleList extends StatelessWidget {
         }
         return const SizedBox.shrink();
       },
-    ) : const Center(child: Text("Beer time"));
+    ) : const SizedBox.shrink();
   }
 
   Widget buildInfoTile(int i) {
@@ -87,7 +105,11 @@ class ScheduleList extends StatelessWidget {
             Text(schedule[index.toString()][i]["audNum"].trim()),
             Text(schedule[index.toString()][i]["disciplType"].trim()),
             Text(
-                convertString(schedule[index.toString()][i]["dayDate"].trim(), parity)
+              convertString(
+                schedule[index.toString()][i]["dayDate"].trim(),
+                parity,
+                date,
+              )
             ),
           ],
         ),
