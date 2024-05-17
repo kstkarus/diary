@@ -5,37 +5,33 @@ import 'auth_widget.dart';
 import 'main_widget.dart';
 import 'http_parser.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static final _defaultLightColor = ColorScheme.fromSwatch(primarySwatch: Colors.lightGreen);
-  static final _defaultDarkColor = ColorScheme.fromSwatch(primarySwatch: Colors.lightGreen, brightness: Brightness.dark);
-  
+  static final _defaultLightColorScheme = ColorScheme.fromSwatch(primarySwatch: Colors.blue);
+  static final _defaultDarkColorScheme = ColorScheme.fromSwatch(primarySwatch: Colors.blue, brightness: Brightness.dark);
+
   @override
   Widget build(BuildContext context) {
-    return DynamicColorBuilder(
-      builder: (lightColor, darkColor) {
-        return MaterialApp(
-          title: 'Diary',
-          theme: ThemeData(
-            colorScheme: lightColor ?? _defaultLightColor,
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorScheme: darkColor ?? _defaultDarkColor,
-            useMaterial3: true,
-          ),
-          themeMode: ThemeMode.light,
-          home: const MyHomePage(title: 'Diary'),
-        );
-      },
-    );
+    return DynamicColorBuilder(builder: (light, dark) {
+      return MaterialApp(
+        title: 'Diary',
+        theme: ThemeData(
+          colorScheme: light ?? _defaultLightColorScheme,
+          useMaterial3: true,
+        ),
+        darkTheme: ThemeData(
+          colorScheme: dark ?? _defaultDarkColorScheme,
+          useMaterial3: true,
+        ),
+        themeMode: ThemeMode.light,
+        home: const MyHomePage(title: 'Diary'),
+      );
+    });
   }
 }
 
@@ -93,7 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Scaffold buildAuthPage(BuildContext context) {
     return Scaffold(
     appBar: AppBar(
-      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       title: Text(widget.title),
     ),
     body: AuthWidget(

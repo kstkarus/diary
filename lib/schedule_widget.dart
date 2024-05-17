@@ -25,7 +25,8 @@ class _SchedulePageState extends State<SchedulePage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        buildEasyDateTimeLine(),
+        const SizedBox(height: 10),
+        buildEasyDateTimeLine(context),
         const SizedBox(height: 10),
         Expanded(
           child: FutureBuilder(
@@ -49,7 +50,7 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 
-  EasyDateTimeLine buildEasyDateTimeLine() {
+  EasyDateTimeLine buildEasyDateTimeLine(BuildContext context) {
     return EasyDateTimeLine(
       initialDate: DateTime.now(),
       onDateChange: (selectedDate) {
@@ -59,10 +60,21 @@ class _SchedulePageState extends State<SchedulePage> {
           _selectedDate = selectedDate;
         });
       },
-      //activeColor: const Color(0xff85A389),
+      //activeColor: Theme.of(context).,
+      headerProps: const EasyHeaderProps(
+        showHeader: false,
+      ),
       dayProps: const EasyDayProps(
-        todayHighlightStyle: TodayHighlightStyle.withBackground,
-        //todayHighlightColor: Color(0xffE1ECC8),
+        activeDayStyle: DayStyle(
+          borderRadius: 32.0,
+        ),
+        inactiveDayStyle: DayStyle(
+          borderRadius: 32.0,
+        ),
+      ),
+      timeLineProps: const EasyTimeLineProps(
+        hPadding: 16.0, // padding from left and right
+        //separatorPadding: 16.0, // padding between days
       ),
     );
   }
