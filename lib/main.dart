@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'auth_widget.dart';
 import 'main_widget.dart';
+import 'settings_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/AuthPage": (context) => const AuthWidget(),
           "/MainPage": (context) => const MainWidget(),
+          "/SettingsPage": (context) => const SettingsPage(),
         },
       );
     });

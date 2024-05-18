@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'settings_widget.dart';
 import 'schedule_widget.dart';
 import 'exams_widget.dart';
 import 'staff_widget.dart';
@@ -32,13 +31,7 @@ class _MainWidgetState extends State<MainWidget> {
             const Text("Diary"),
             IconButton(
                 onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return const SettingsPage();
-                        })
-                  );
+                  Navigator.pushNamed(context, "/SettingsPage");
                 },
                 icon: const Icon(Icons.settings_outlined),
             )
