@@ -6,18 +6,25 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setInt("groupID", 0);
-              },
-              child: const Text("Reset group")
-          )
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Settings"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  prefs.setString("GroupID", "");
+
+                  Navigator.pushNamedAndRemoveUntil(context, "/AuthPage", (_) => false);
+                },
+                child: const Text("Reset group")
+            )
+          ],
+        ),
       ),
     );
   }

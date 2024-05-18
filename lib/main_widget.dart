@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'settings_widget.dart';
 import 'schedule_widget.dart';
 import 'exams_widget.dart';
+import 'staff_widget.dart';
 import 'http_parser.dart';
 
 class MainWidget extends StatefulWidget {
-  const MainWidget({super.key, required this.groupID});
-
-  final String groupID;
+  const MainWidget({super.key});
 
   @override
   State<MainWidget> createState() => _MainWidgetState();
@@ -18,22 +17,38 @@ class _MainWidgetState extends State<MainWidget> {
   late Future<Map<String, dynamic>> _schedule;
   
   @override
-  void initState() {
-    super.initState();
-    
-    _schedule = getSchedule(widget.groupID);
-  }
-  
-  @override
   Widget build(BuildContext context) {
+    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
+
+    _schedule = getSchedule(
+      arguments["groupID"],
+    );
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Diary"),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Diary"),
+            IconButton(
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return const SettingsPage();
+                        })
+                  );
+                },
+                icon: const Icon(Icons.settings_outlined),
+            )
+          ],
+        ),
       ),
       body: [
         SchedulePage(schedule: _schedule),
-        ExamsPage(groupID: widget.groupID),
-        SettingsPage(),
+        ExamsPage(groupID: arguments["groupID"]),
+        StaffPage(),
       ][_currentPageIndex],
       bottomNavigationBar: buildNavigationBar(),
     );
@@ -59,10 +74,10 @@ class _MainWidgetState extends State<MainWidget> {
           label: "Exams",
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.settings),
-          icon: Icon(Icons.settings_outlined),
-          label: "Settings",
-        )
+          selectedIcon: Icon(Icons.person),
+          icon: Icon(Icons.person_outline),
+          label: "Staff",
+        ),
       ],
     );
   }

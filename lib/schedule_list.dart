@@ -87,27 +87,27 @@ class ScheduleList extends StatelessWidget {
       itemCount: (schedule[index.toString()] as List<dynamic>).length,
       itemBuilder: (context, i) {
         if (validateLesson(schedule[index.toString()][i]["dayDate"], parity, date)) { // проверка на чет/нечет
-          return buildInfoTile(i);
+          return buildInfoTile(schedule[index.toString()][i]);
         }
         return const SizedBox.shrink();
       },
     ) : const SizedBox.shrink();
   }
 
-  Widget buildInfoTile(int i) {
+  Widget buildInfoTile(Map<String, dynamic> val) {
     return Card(
       child: ListTile(
-        title: Text(schedule[index.toString()][i]["disciplName"]),
+        title: Text(val["disciplName"]),
         subtitle: Wrap(
           spacing: 10,
           children: [
-            Text(schedule[index.toString()][i]["dayTime"].trim()),
-            Text(schedule[index.toString()][i]['buildNum'].trim()),
-            Text(schedule[index.toString()][i]["audNum"].trim()),
-            Text(schedule[index.toString()][i]["disciplType"].trim()),
+            Text(val["dayTime"].trim()),
+            Text(val['buildNum'].trim()),
+            Text(val["audNum"].trim()),
+            Text(val["disciplType"].trim()),
             Text(
               convertString(
-                schedule[index.toString()][i]["dayDate"].trim(),
+                val["dayDate"].trim(),
                 parity,
                 date,
               )
