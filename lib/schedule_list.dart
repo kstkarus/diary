@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:week_number/iso.dart';
+
+bool getWeekParity(DateTime date) {
+  return date.weekNumber % 2 == 0;
+}
 
 bool validateLesson(String info, bool parity, DateTime date) {
   info = info.trim();
@@ -67,53 +73,99 @@ String convertString(String info, bool parity, DateTime date) {
   return info;
 }
 
-class ScheduleList extends StatelessWidget {
+class ScheduleList extends StatefulWidget {
   const ScheduleList({
     super.key,
     required this.schedule,
-    required this.index,
-    required this.parity,
-    required this.date,
   });
 
-  final int index;
   final Map<String, dynamic> schedule;
-  final bool parity;
-  final DateTime date;
+
+  @override
+  State<ScheduleList> createState() => _ScheduleListState();
+}
+
+class _ScheduleListState extends State<ScheduleList> {
+  int index = DateTime.now().weekday;
+  bool parity = getWeekParity(DateTime.now());
+  DateTime date = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    return index != 7 ? ListView.builder(
-      itemCount: (schedule[index.toString()] as List<dynamic>).length,
-      itemBuilder: (context, i) {
-        if (validateLesson(schedule[index.toString()][i]["dayDate"], parity, date)) { // проверка на чет/нечет
-          return buildInfoTile(schedule[index.toString()][i]);
-        }
-        return const SizedBox.shrink();
-      },
-    ) : const SizedBox.shrink();
+    bool isNull = widget.schedule[index.toString()] != null;
+
+    return Column(
+      children: [
+        buildEasyDateTimeLine(context),
+        const SizedBox(height: 10),
+        isNull ? Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+              itemCount: (widget.schedule[index.toString()] as List<dynamic>).length,
+              itemBuilder: (context, i) {
+                if (validateLesson(widget.schedule[index.toString()][i]["dayDate"], parity, date)) { // проверка на чет/нечет
+                  return buildInfoTile(widget.schedule[index.toString()][i]);
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ) : const SizedBox.shrink(),
+      ],
+    );
   }
 
-  Widget buildInfoTile(Map<String, dynamic> val) {
+  Widget buildInfoTile(Map<String, dynamic> data) {
     return Card(
       child: ListTile(
-        title: Text(val["disciplName"]),
+        title: Text(data["disciplName"]),
         subtitle: Wrap(
           spacing: 10,
           children: [
-            Text(val["dayTime"].trim()),
-            Text(val['buildNum'].trim()),
-            Text(val["audNum"].trim()),
-            Text(val["disciplType"].trim()),
+            Text(data["dayTime"].trim()),
+            Text(data['buildNum'].trim()),
+            Text(data["audNum"].trim()),
+            Text(data["disciplType"].trim()),
             Text(
               convertString(
-                val["dayDate"].trim(),
+                data["dayDate"].trim(),
                 parity,
                 date,
               )
             ),
+            Text((data["prepodName"] ?? data["group"]).trim()),
           ],
         ),
+      ),
+    );
+  }
+
+  EasyDateTimeLine buildEasyDateTimeLine(BuildContext context) {
+    return EasyDateTimeLine(
+      initialDate: DateTime.now(),
+      onDateChange: (selectedDate) {
+        setState(() {
+          index = selectedDate.weekday;
+          parity = getWeekParity(selectedDate);
+          date = selectedDate;
+        });
+      },
+      //activeColor: Theme.of(context).,
+      headerProps: const EasyHeaderProps(
+        showHeader: false,
+      ),
+      dayProps: const EasyDayProps(
+        activeDayStyle: DayStyle(
+          borderRadius: 32.0,
+        ),
+        inactiveDayStyle: DayStyle(
+          borderRadius: 32.0,
+        ),
+      ),
+      timeLineProps: const EasyTimeLineProps(
+        hPadding: 16.0, // padding from left and right
+        //separatorPadding: 16.0, // padding between days
       ),
     );
   }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'schedule_widget.dart';
 import 'exams_widget.dart';
 import 'staff_widget.dart';
-import 'http_parser.dart';
 
 class MainWidget extends StatefulWidget {
   const MainWidget({super.key});
@@ -13,16 +12,9 @@ class MainWidget extends StatefulWidget {
 
 class _MainWidgetState extends State<MainWidget> {
   int _currentPageIndex = 0;
-  late Future<Map<String, dynamic>> _schedule;
   
   @override
   Widget build(BuildContext context) {
-    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
-
-    _schedule = getSchedule(
-      arguments["groupID"],
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -39,9 +31,9 @@ class _MainWidgetState extends State<MainWidget> {
         ),
       ),
       body: [
-        SchedulePage(schedule: _schedule),
-        ExamsPage(groupID: arguments["groupID"]),
-        StaffPage(),
+        const SchedulePage(),
+        const ExamsPage(),
+        const StaffPage(),
       ][_currentPageIndex],
       bottomNavigationBar: buildNavigationBar(),
     );

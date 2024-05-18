@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
-import 'schedule_list.dart';
 import 'http_parser.dart';
+import 'schedule_list.dart';
 
-class SchedulePage extends StatelessWidget {
-  const SchedulePage({super.key});
+class StaffInfoPage extends StatelessWidget {
+  const StaffInfoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
-    Future<Map<String, dynamic>> schedule = getSchedule(
-      arguments["groupID"],
-    );
 
-    return FutureBuilder(
-        future: schedule,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(arguments["name"]),
+      ),
+      body: FutureBuilder(
+        future: getStaffSchedule(arguments["login"]),
         builder: (context, v) {
           if (v.hasData) {
-              return ScheduleList(
+            return ScheduleList(
                 schedule: v.data!,
-              ); // 1 - пн, 2 - вт, ..., 6 - сб
+            );
           } else if (v.hasError) {
-            return Text("${v.error}");
+            return Text("An error occurred: ${v.error}");
           }
+
           return const Center(child: CircularProgressIndicator());
-        },
+        }
+      ),
     );
   }
 }

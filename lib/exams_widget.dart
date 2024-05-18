@@ -1,46 +1,35 @@
 import 'package:flutter/material.dart';
 import 'http_parser.dart';
 
-class ExamsPage extends StatefulWidget {
-  const ExamsPage({
-    super.key,
-    required this.groupID,
-  });
-
-  final String groupID;
-
-  @override
-  State<ExamsPage> createState() => _ExamsPageState();
-}
-
-class _ExamsPageState extends State<ExamsPage> {
-  late Future<List<dynamic>> _exams;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _exams = getExams(widget.groupID);
-  }
+class ExamsPage extends StatelessWidget {
+  const ExamsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _exams,
-        builder: (context, v) {
-          if (v.hasData) {
-            return ListView.builder(
-              itemCount: v.data!.length,
-              itemBuilder: (context, i) {
-                return buildExamTile(v.data![i]);
-              },
-            );
-          } else if (v.hasError) {
-            Text("An error occurred ${v.error}");
-          }
+    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
+    Future<List<dynamic>> exams = getExams(
+      arguments["groupID"]
+    );
 
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FutureBuilder(
+          future: exams,
+          builder: (context, v) {
+            if (v.hasData) {
+              return ListView.builder(
+                itemCount: v.data!.length,
+                itemBuilder: (context, i) {
+                  return buildExamTile(v.data![i]);
+                },
+              );
+            } else if (v.hasError) {
+              Text("An error occurred ${v.error}");
+            }
+
+            return const Center(child: CircularProgressIndicator());
+          }
+      ),
     );
   }
 
