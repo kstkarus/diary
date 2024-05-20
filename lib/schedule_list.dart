@@ -111,7 +111,7 @@ class _ScheduleListState extends State<ScheduleList> {
               },
             ),
           ),
-        ) : const SizedBox.shrink(),
+        ) : const Expanded(child: Center(child: Text("There's nothing here..."))),
       ],
     );
   }
@@ -151,7 +151,6 @@ class _ScheduleListState extends State<ScheduleList> {
           date = selectedDate;
         });
       },
-      //activeColor: Theme.of(context).,
       headerProps: const EasyHeaderProps(
         showHeader: false,
       ),

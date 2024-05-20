@@ -108,7 +108,7 @@ Future<List<dynamic>> getExams(String groupID) async {
   };
 
   try {
-    final response = await http.post(examsUrl, body: exams);
+    final response = await http.post(examsUrl, body: exams).timeout(const Duration(seconds: 2));
 
     if (response.statusCode == 200) {
       final prefs = await SharedPreferences.getInstance();
@@ -143,7 +143,7 @@ Future<Map<String, dynamic>> getSchedule(String groupID) async {
   };
 
   try {
-    final response = await http.post(groupsUrl, body: groups);
+    final response = await http.post(groupsUrl, body: groups).timeout(const Duration(seconds: 2));
 
     if (response.statusCode == 200) {
       final prefs = await SharedPreferences.getInstance();
