@@ -41,7 +41,7 @@ class _StaffPageState extends State<StaffPage> {
                 builder: (context, v) {
                   if (v.hasData) {
                     if (v.data!.isEmpty) {
-                      return const SizedBox.shrink();
+                      return const Center(child: Text("There's nothing here..."));
                     }
 
                     return ListView.builder(
