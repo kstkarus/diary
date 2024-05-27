@@ -6,12 +6,16 @@ import 'main_widget.dart';
 import 'settings_widget.dart';
 import 'staff_info_widget.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  runApp(MyApp(savedThemeMode: savedThemeMode));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.savedThemeMode});
+
+  final AdaptiveThemeMode? savedThemeMode;
 
   static final _defaultLightColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
   static final _defaultDarkColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark);
@@ -20,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(builder: (light, dark) {
       return AdaptiveTheme(
-        initial: AdaptiveThemeMode.system,
+        initial: savedThemeMode ?? AdaptiveThemeMode.system,
         light: ThemeData(
           colorScheme: light ?? _defaultLightColorScheme,
           useMaterial3: true,
