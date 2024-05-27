@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(builder: (light, dark) {
       return AdaptiveTheme(
-        initial: AdaptiveThemeMode.dark,
+        initial: AdaptiveThemeMode.system,
         light: ThemeData(
           colorScheme: light ?? _defaultLightColorScheme,
           useMaterial3: true,

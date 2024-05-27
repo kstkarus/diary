@@ -1,7 +1,9 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
+import 'package:date_picker_timeline/extra/style.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:week_number/iso.dart';
 
 bool getWeekParity(DateTime date) {
@@ -180,6 +182,17 @@ class _ScheduleListState extends State<ScheduleList> {
       controller: controller,
       daysCount: 14,
       height: 88,
+      selectionColor: Theme.of(context).colorScheme.secondaryContainer,
+      dateTextStyle: defaultDateTextStyle.apply(
+        color: Theme.of(context).colorScheme.onBackground
+      ),
+      dayTextStyle: defaultDayTextStyle.apply(
+          color: Theme.of(context).colorScheme.onBackground
+      ),
+      monthTextStyle: defaultMonthTextStyle.apply(
+          color: Theme.of(context).colorScheme.onBackground
+      ),
+      selectedTextColor: Theme.of(context).colorScheme.onSecondaryContainer,
       initialSelectedDate: firstDate,
       onDateChange: (selectedDate) {
         setState(() {
