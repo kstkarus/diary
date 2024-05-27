@@ -17,6 +17,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeMode theme = ThemeMode.light;
+
     return DynamicColorBuilder(builder: (light, dark) {
       return MaterialApp(
         title: 'Diary',
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
           colorScheme: dark ?? _defaultDarkColorScheme,
           useMaterial3: true,
         ),
-        themeMode: ThemeMode.light,
+        themeMode: theme,
         initialRoute: "/AuthPage",
         routes: {
           "/AuthPage": (context) => const AuthWidget(),

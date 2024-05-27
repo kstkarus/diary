@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:week_number/iso.dart';
 
 bool getWeekParity(DateTime date) {
@@ -91,9 +90,9 @@ class _ScheduleListState extends State<ScheduleList> {
   int index = DateTime.now().weekday;
   bool parity = getWeekParity(DateTime.now());
 
-  EasyInfiniteDateTimelineController controller = EasyInfiniteDateTimelineController();
+  DatePickerController controller = DatePickerController();
   DateTime firstDate = DateTime.now();
-  DateTime lastDate = DateTime.now().add(const Duration(days: 14));
+  DateTime lastDate = DateTime.now().add(const Duration(days: 13)); // days count - 1
   DateTime focusDate = DateTime.now();
 
   @override
@@ -116,7 +115,7 @@ class _ScheduleListState extends State<ScheduleList> {
                     focusDate = focusDate.subtract(const Duration(days: 1));
                     parity = getWeekParity(focusDate);
                     index = focusDate.weekday;
-                    controller.animateToFocusDate();
+                    controller.setDateAndAnimate(focusDate);
                   });
                 }
               }
@@ -127,7 +126,7 @@ class _ScheduleListState extends State<ScheduleList> {
                     focusDate = focusDate.add(const Duration(days: 1));
                     parity = getWeekParity(focusDate);
                     index = focusDate.weekday;
-                    controller.animateToFocusDate();
+                    controller.setDateAndAnimate(focusDate);
                   });
                 }
               }
@@ -175,14 +174,13 @@ class _ScheduleListState extends State<ScheduleList> {
     );
   }
 
-  EasyInfiniteDateTimeLine buildEasyDateTimeLine(BuildContext context) {
-    return EasyInfiniteDateTimeLine(
-      //selectionMode: const SelectionMode.alwaysFirst(),
+  DatePicker buildEasyDateTimeLine(BuildContext context) {
+    return DatePicker(
+      firstDate,
       controller: controller,
-      firstDate: firstDate,
-      lastDate: lastDate,
-      focusDate: focusDate,
-      showTimelineHeader: false,
+      daysCount: 14,
+      height: 88,
+      initialSelectedDate: firstDate,
       onDateChange: (selectedDate) {
         setState(() {
           index = selectedDate.weekday;
@@ -190,18 +188,6 @@ class _ScheduleListState extends State<ScheduleList> {
           focusDate = selectedDate;
         });
       },
-      dayProps: const EasyDayProps(
-        activeDayStyle: DayStyle(
-          borderRadius: 32.0,
-        ),
-        inactiveDayStyle: DayStyle(
-          borderRadius: 32.0,
-        ),
-      ),
-      timeLineProps: const EasyTimeLineProps(
-        hPadding: 16.0, // padding from left and right
-        //separatorPadding: 16.0, // padding between days
-      ),
     );
   }
 }

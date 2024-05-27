@@ -81,6 +81,11 @@ class _AuthWidgetState extends State<AuthWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+              "diary",
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
             TextField(
               controller: _controller,
               decoration: const InputDecoration(
@@ -89,9 +94,7 @@ class _AuthWidgetState extends State<AuthWidget> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             ElevatedButton(
                 onPressed: () {
                   _submitPressed();

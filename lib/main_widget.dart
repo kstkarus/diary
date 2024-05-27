@@ -17,18 +17,21 @@ class _MainWidgetState extends State<MainWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("Diary"),
-            IconButton(
-                onPressed: (){
-                  Navigator.pushNamed(context, "/SettingsPage");
-                },
-                icon: const Icon(Icons.settings_outlined),
-            )
-          ],
-        ),
+        title: const Text("Diary"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                //ThemeMode
+              },
+              icon: const Icon(Icons.light_mode_outlined)
+          ),
+          IconButton(
+            onPressed: (){
+              Navigator.pushNamed(context, "/SettingsPage");
+            },
+            icon: const Icon(Icons.settings_outlined),
+          )
+        ],
       ),
       body: [
         const SchedulePage(),
