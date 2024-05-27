@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'auth_widget.dart';
 import 'main_widget.dart';
 import 'settings_widget.dart';
@@ -17,27 +18,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeMode theme = ThemeMode.light;
-
     return DynamicColorBuilder(builder: (light, dark) {
-      return MaterialApp(
-        title: 'Diary',
-        theme: ThemeData(
+      return AdaptiveTheme(
+        initial: AdaptiveThemeMode.dark,
+        light: ThemeData(
           colorScheme: light ?? _defaultLightColorScheme,
           useMaterial3: true,
         ),
-        darkTheme: ThemeData(
+        dark: ThemeData(
           colorScheme: dark ?? _defaultDarkColorScheme,
           useMaterial3: true,
         ),
-        themeMode: theme,
-        initialRoute: "/AuthPage",
-        routes: {
-          "/AuthPage": (context) => const AuthWidget(),
-          "/MainPage": (context) => const MainWidget(),
-          "/SettingsPage": (context) => const SettingsPage(),
-          "/StaffInfoPage": (context) => const StaffInfoPage(),
-        },
+        builder: (theme, darkTheme) => MaterialApp(
+          title: 'Diary',
+          theme: theme,
+          darkTheme: darkTheme,
+          initialRoute: "/AuthPage",
+          routes: {
+            "/AuthPage": (context) => const AuthWidget(),
+            "/MainPage": (context) => const MainWidget(),
+            "/SettingsPage": (context) => const SettingsPage(),
+            "/StaffInfoPage": (context) => const StaffInfoPage(),
+          },
+        ),
       );
     });
   }
