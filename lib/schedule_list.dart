@@ -183,6 +183,8 @@ class _ScheduleListState extends State<ScheduleList> {
       height: 88,
       selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       selectedTextColor: Theme.of(context).colorScheme.onSecondaryContainer,
+      todayColor: Theme.of(context).colorScheme.tertiaryContainer,
+      todayTextColor: Theme.of(context).colorScheme.onTertiaryContainer,
       dateTextStyle: defaultDateTextStyle.apply(
         color: Theme.of(context).colorScheme.onBackground
       ),
