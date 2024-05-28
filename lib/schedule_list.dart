@@ -168,7 +168,24 @@ class _ScheduleListState extends State<ScheduleList> {
                 focusDate,
               )
             ),
-            Text((data["prepodName"] ?? data["group"]).trim()),
+            data["prepodName"] != null // если есть имя преподавателя то выводим кликабельный текст
+                ? InkWell(
+                  onDoubleTap: () {
+                    Navigator.pushNamed(
+                        context,
+                        "/StaffInfoPage",
+                        arguments: {
+                          "name": data['prepodName'].trim(),
+                          "login": data["prepodLogin"],
+                        }
+                    );
+                  },
+                  child: Text(
+                      data["prepodName"]
+                      .trim()
+                  )
+                 )
+                : Text(data["group"].trim()), // иначе номер группы преподавателя
           ],
         ),
       ),
