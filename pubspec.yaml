@@ -41,6 +41,7 @@ dependencies:
   intl: ^0.19.0
   date_picker_timeline: ^1.2.6
   adaptive_theme: ^3.6.0
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +56,15 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_launcher_icons:
+  image_path: "assets/diary.png"
+  android: true
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/diary.png"
+    background_color: "#FFFFFF"
 
 # The following section is specific to Flutter packages.
 flutter:

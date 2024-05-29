@@ -3,7 +3,7 @@
     "short_name": "diary",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
+    "background_color": "#FFFFFF",
     "theme_color": "#0175C2",
     "description": "Diary with your score and hometask",
     "orientation": "portrait-primary",
