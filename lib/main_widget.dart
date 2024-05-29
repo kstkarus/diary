@@ -13,6 +13,13 @@ class MainWidget extends StatefulWidget {
 
 class _MainWidgetState extends State<MainWidget> {
   int _currentPageIndex = 0;
+  final PageController _pageController = PageController();
+
+  static const List<Widget> _pages = [
+    SchedulePage(),
+    ExamsPage(),
+    StaffPage()
+  ];
 
   Icon getThemeIcon(BuildContext context) {
     switch (AdaptiveTheme.of(context).mode) {
@@ -51,11 +58,15 @@ class _MainWidgetState extends State<MainWidget> {
           )
         ],
       ),
-      body: [
-        const SchedulePage(),
-        const ExamsPage(),
-        const StaffPage(),
-      ][_currentPageIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (int index) {
+          setState(() {
+            _currentPageIndex = index;
+          });
+        },
+        children: _pages,
+      ),
       bottomNavigationBar: buildNavigationBar(),
     );
   }
@@ -66,6 +77,11 @@ class _MainWidgetState extends State<MainWidget> {
       onDestinationSelected: (int index) {
         setState(() {
           _currentPageIndex = index;
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOut,
+          );
         });
       },
       destinations: const [

@@ -8,12 +8,14 @@ class StaffPage extends StatefulWidget {
   State<StaffPage> createState() => _StaffPageState();
 }
 
-class _StaffPageState extends State<StaffPage> {
+class _StaffPageState extends State<StaffPage> with AutomaticKeepAliveClientMixin {
   final TextEditingController _controller = TextEditingController();
   Future<List<dynamic>> staffNames = getStaff('');
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -85,4 +87,7 @@ class _StaffPageState extends State<StaffPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'http_parser.dart';
 
-class ExamsPage extends StatelessWidget {
+class ExamsPage extends StatefulWidget {
   const ExamsPage({super.key});
 
   @override
+  State<ExamsPage> createState() => _ExamsPageState();
+}
+
+class _ExamsPageState extends State<ExamsPage> with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
     Future<List<dynamic>> exams = getExams(
       arguments["groupID"]
@@ -50,4 +57,7 @@ class ExamsPage extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
