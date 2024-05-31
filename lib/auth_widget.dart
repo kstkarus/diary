@@ -8,7 +8,7 @@ class AuthWidget extends StatefulWidget {
   @override
   State<AuthWidget> createState() => _AuthWidgetState();
 }
-//
+///
 class _AuthWidgetState extends State<AuthWidget> {
   final TextEditingController _controller = TextEditingController();
   late String _groupID;
