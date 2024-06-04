@@ -1,6 +1,7 @@
 import 'package:date_picker_timeline/extra/style.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:week_number/iso.dart';
 import 'http_parser.dart' as http_manager;
 
@@ -60,6 +61,63 @@ class _ScheduleState extends State<Schedule> {
     );
   }
 
+  bool isShouldDisplay(String type, DateTime date) {
+    bool parity = date.weekNumber % 2 == 0;
+    int groupType = 1; // не выбрана
+
+    switch (type) {
+      case "":
+        return true;
+      case "неч":
+        return !parity;
+      case "чет":
+        return parity;
+      case "неч/чет":
+        if (groupType == 1) {
+          return !parity;
+        }
+        if (groupType == 2) {
+          return parity;
+        }
+        return true;
+      case "чет/неч":
+        if (groupType == 1) {
+          return parity;
+        }
+        if (groupType == 2) {
+          return !parity;
+        }
+        return true;
+      default:
+        String currentDate = DateFormat('dd.MM').format(date);
+
+        String infoSpaceless = type.replaceAll(" ", "");
+        List<String> groups = infoSpaceless.split("/");
+
+        if (groupType == 0) { // если подгруппа не выбрана, то проходим по каждой дате
+          for (int i = 0; i < groups.length; i++) {
+            String group = groups[i];
+
+            for (var j in group.split(";")) {
+              if (currentDate == j) {
+                return true;
+              }
+            }
+          }
+        } else {
+          String group = groups[groupType - 1]; // если подгруппа выбрана, то проходим до/после слеша
+
+          for (var j in group.split(";")) {
+            if (currentDate == j) {
+              return true;
+            }
+          }
+        }
+    }
+
+    return false;
+  }
+
   List<Widget> buildSchedulePages(Map<String, dynamic>? schedule) {
     List<Widget> buffer = [];
 
@@ -76,22 +134,31 @@ class _ScheduleState extends State<Schedule> {
                   itemBuilder: (context, j) {
                     var data = scheduleCurrent[j];
 
-                    return Card(
-                      child: ListTile(
-                        title: Text(data["disciplName"].trim()),
-                        subtitle: Wrap(
-                          spacing: 10,
-                          children: [
-                            Text(data["dayTime"].trim()),
-                            Text(data['buildNum'].trim()),
-                            Text(data["audNum"].trim()),
-                            Text(data["disciplType"].trim()),
-                            Text(data["dayDate"].trim()),
-                            Text(data["prepodName"].trim()),
-                          ],
-                        ),
-                      ),
+                    bool shouldDiplay = isShouldDisplay(
+                      data["dayDate"].trim(),
+                      dayCurrent
                     );
+
+                    return shouldDiplay
+                        ? Card(
+                            child: ListTile(
+                              title: Text(
+                                data["disciplName"].trim(),
+                              ),
+                              subtitle: Wrap(
+                                spacing: 10,
+                                children: [
+                                  Text(data["dayTime"].trim()),
+                                  Text(data['buildNum'].trim()),
+                                  Text(data["audNum"].trim()),
+                                  Text(data["disciplType"].trim()),
+                                  Text(data["dayDate"].trim()),
+                                  Text(data["prepodName"].trim()),
+                                ],
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink();
                   }
               )
           );
