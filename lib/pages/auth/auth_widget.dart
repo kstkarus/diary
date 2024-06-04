@@ -11,29 +11,49 @@ class AuthWidget extends StatefulWidget {
 
 class _AuthWidgetState extends State<AuthWidget> {
   final TextEditingController _controller = TextEditingController();
-  late String _groupID;
   Future prefs = SharedPreferences.getInstance();
+  bool isError = false;
+  bool isChecking = false;
 
-  void _submitPressed() async {
-    List<dynamic> groups = await getGroups(_controller.text);
-    final readyInstance = await prefs;
-
-    if (int.tryParse(_controller.text) != null && groups.isNotEmpty && groups[0]["group"] == _controller.text) {
+  void _submitPressed(var readyInstance) {
+    if (int.tryParse(_controller.text) == null) {
       setState(() {
-        _groupID = groups[0]["id"].toString();
-        readyInstance.setString("GroupID", _groupID);
-
-        Navigator.pushReplacementNamed(context, "/MainPage", arguments: {
-          "groupID": _groupID,
-        });
+        isError = true;
       });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Invalid group's number. Try again"),
-          )
-      );
+
+      return;
     }
+
+    setState(() {
+      isChecking = true;
+    });
+
+    getGroups(_controller.text).then((groups) {
+      if (int.tryParse(_controller.text) != null && groups.isNotEmpty && groups[0]["group"] == _controller.text) {
+        setState(() {
+          String groupID = groups[0]["id"].toString();
+          readyInstance.setString("GroupID", groupID);
+          isChecking = false;
+
+          Navigator.pushReplacementNamed(context, "/MainPage", arguments: {
+            "groupID": groupID,
+          });
+        });
+      } else {
+        setState(() {
+          isChecking = false;
+          isError = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Invalid group's number. Try again"),
+            )
+        );
+      }
+
+      return groups;
+    });
   }
 
   @override
@@ -60,7 +80,7 @@ class _AuthWidgetState extends State<AuthWidget> {
                 );
               });
             } else {
-              return buildAuthForm();
+              return buildAuthForm(v.data, isError, isChecking);
             }
           }
 
@@ -68,13 +88,13 @@ class _AuthWidgetState extends State<AuthWidget> {
             return Text("An error occurred: ${v.error}");
           }
 
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: LinearProgressIndicator());
         },
       ),
     );
   }
 
-  Center buildAuthForm() {
+  Center buildAuthForm(var prefs, bool isError, bool isChecking) {
     return Center(
       child: SizedBox(
         width: 250,
@@ -88,16 +108,20 @@ class _AuthWidgetState extends State<AuthWidget> {
             const SizedBox(height: 10),
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: "Group's number",
                 hintText: "Type here",
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                errorText: isError ? "Something went wrong" : null,
+                prefix: isChecking
+                    ? const Center(child: LinearProgressIndicator())
+                    : null,
               ),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
                 onPressed: () {
-                  _submitPressed();
+                  _submitPressed(prefs);
                 },
                 child: const Text("Submit"),
             )

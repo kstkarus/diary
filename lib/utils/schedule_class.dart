@@ -54,7 +54,7 @@ class _ScheduleState extends State<Schedule> {
               );
             }
 
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           },
         ),
       ],
@@ -63,7 +63,7 @@ class _ScheduleState extends State<Schedule> {
 
   bool isShouldDisplay(String type, DateTime date) {
     bool parity = date.weekNumber % 2 == 0;
-    int groupType = 1; // не выбрана
+    int groupType = 0; // 0 - не выбрана; 1 - первая; 2 - вторая
 
     switch (type) {
       case "":
@@ -72,7 +72,7 @@ class _ScheduleState extends State<Schedule> {
         return !parity;
       case "чет":
         return parity;
-      case "неч/чет":
+      case "неч/чет": // первая группа идет по нечетным
         if (groupType == 1) {
           return !parity;
         }
@@ -80,7 +80,7 @@ class _ScheduleState extends State<Schedule> {
           return parity;
         }
         return true;
-      case "чет/неч":
+      case "чет/неч": // первая группа идет по четным
         if (groupType == 1) {
           return parity;
         }
@@ -127,50 +127,79 @@ class _ScheduleState extends State<Schedule> {
         var scheduleCurrent = schedule[dayCurrent.weekday.toString()];
 
         if (scheduleCurrent != null) {
+          int countOfLessons = 0;
+
           buffer.add(
               ListView.builder(
-                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  //shrinkWrap: true,
                   itemCount: scheduleCurrent.length,
                   itemBuilder: (context, j) {
                     var data = scheduleCurrent[j];
 
                     bool shouldDiplay = isShouldDisplay(
-                      data["dayDate"].trim(),
-                      dayCurrent
+                        data["dayDate"].trim(),
+                        dayCurrent
                     );
 
-                    return shouldDiplay
-                        ? Card(
-                            child: ListTile(
-                              title: Text(
-                                data["disciplName"].trim(),
-                              ),
-                              subtitle: Wrap(
-                                spacing: 10,
-                                children: [
-                                  Text(data["dayTime"].trim()),
-                                  Text(data['buildNum'].trim()),
-                                  Text(data["audNum"].trim()),
-                                  Text(data["disciplType"].trim()),
-                                  Text(data["dayDate"].trim()),
-                                  Text(data["prepodName"].trim()),
-                                ],
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink();
+                    if (shouldDiplay) {
+                      countOfLessons++;
+
+                      return Card(
+                        child: ListTile(
+                          title: Text(
+                            data["disciplName"].trim(),
+                          ),
+                          subtitle: Wrap(
+                            spacing: 10,
+                            children: [
+                              Text(data["dayTime"].trim()),
+                              Text(data['buildNum'].trim()),
+                              Text(data["audNum"].trim()),
+                              Text(data["disciplType"].trim()),
+                              Text(data["dayDate"].trim()),
+                              Text(data["prepodName"].trim()),
+                            ],
+                          ),
+                        ),
+                      );
+                    } else {
+                      if (j == scheduleCurrent.length - 1  && countOfLessons == 0) {
+                        return buildBeerTime();
+                      }
+
+                      return const SizedBox.shrink();
+                    }
                   }
               )
           );
         } else {
           buffer.add(
-              const Center(child: Text("Unable to get schedule for this date"))
+              buildBeerTime(),
           );
         }
       }
     }
 
     return buffer;
+  }
+
+  Column buildBeerTime() {
+    return Column(
+                        children: [
+                          const Text("There are no lessons on this day"),
+                          Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            //elevation: 5.0,
+                            child: const Image(
+                              image: NetworkImage("https://cs8.pikabu.ru/post_img/big/2017/09/04/10/1504541843171655768.jpg"),
+                            ),
+                          )
+                        ],
+                      );
   }
 
   Widget buildCard(var data) {
