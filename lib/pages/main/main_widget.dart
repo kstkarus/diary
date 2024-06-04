@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'schedule_widget.dart';
-import 'exams_widget.dart';
-import 'staff_widget.dart';
+import 'schedule/schedule_widget.dart';
+import 'exams/exams_widget.dart';
+import 'staff/staff_widget.dart';
 
 class MainWidget extends StatefulWidget {
   const MainWidget({super.key});
@@ -13,7 +13,7 @@ class MainWidget extends StatefulWidget {
 
 class _MainWidgetState extends State<MainWidget> {
   int _currentPageIndex = 0;
-  final PageController _pageController = PageController();
+  //final PageController _pageController = PageController();
 
   static const List<Widget> _pages = [
     SchedulePage(),
@@ -58,15 +58,16 @@ class _MainWidgetState extends State<MainWidget> {
           )
         ],
       ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (int index) {
-          setState(() {
-            _currentPageIndex = index;
-          });
-        },
-        children: _pages,
-      ),
+      body: _pages[_currentPageIndex],
+      // PageView(
+      //   controller: _pageController,
+      //   onPageChanged: (int index) {
+      //     setState(() {
+      //       _currentPageIndex = index;
+      //     });
+      //   },
+      //   children: _pages,
+      //),
       bottomNavigationBar: buildNavigationBar(),
     );
   }
@@ -77,11 +78,11 @@ class _MainWidgetState extends State<MainWidget> {
       onDestinationSelected: (int index) {
         setState(() {
           _currentPageIndex = index;
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.easeInOut,
-          );
+          // _pageController.animateToPage(
+          //   index,
+          //   duration: const Duration(milliseconds: 600),
+          //   curve: Curves.easeInOut,
+          // );
         });
       },
       destinations: const [

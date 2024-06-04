@@ -104,7 +104,12 @@ class _ScheduleListState extends State<ScheduleList> {
       children: [
         Text(parity ? "четная" : "нечетная"),
         const SizedBox(height: 10),
+
+        // kIsWeb
+        //     ? Center(child: buildEasyDateTimeLine(context))
+        //     : buildEasyDateTimeLine(context),
         buildEasyDateTimeLine(context),
+
         const SizedBox(height: 10),
         Expanded(
           child: GestureDetector(

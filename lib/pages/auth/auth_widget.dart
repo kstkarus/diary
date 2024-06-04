@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'http_parser.dart';
+import '../../utils/http_parser.dart';
 
 class AuthWidget extends StatefulWidget {
   const AuthWidget({super.key});
@@ -8,7 +8,7 @@ class AuthWidget extends StatefulWidget {
   @override
   State<AuthWidget> createState() => _AuthWidgetState();
 }
-//
+
 class _AuthWidgetState extends State<AuthWidget> {
   final TextEditingController _controller = TextEditingController();
   late String _groupID;

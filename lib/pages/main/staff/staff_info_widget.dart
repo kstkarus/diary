@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'http_parser.dart';
-import 'schedule_list.dart';
+import '../../../utils/http_parser.dart';
+import '../../../utils/schedule_list.dart';
 
 class StaffInfoPage extends StatelessWidget {
   const StaffInfoPage({super.key});

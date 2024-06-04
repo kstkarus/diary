@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'http_parser.dart';
+import '../../../utils/http_parser.dart';
 
 class ExamsPage extends StatefulWidget {
   const ExamsPage({super.key});

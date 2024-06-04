@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'schedule_list.dart';
-import 'http_parser.dart';
+import '../../../utils/schedule_class.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -14,17 +13,19 @@ class _SchedulePageState extends State<SchedulePage> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
     final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
-    Future<Map<String, dynamic>> schedule = getSchedule(
-      arguments["groupID"],
+
+    Schedule schedule = Schedule(
+      id: arguments["groupID"],
     );
 
     return FutureBuilder(
-        future: schedule,
+        future: schedule.scheduleFuture,
         builder: (context, v) {
           if (v.hasData) {
-              return ScheduleList(
-                schedule: v.data!,
-              ); // 1 - пн, 2 - вт, ..., 6 - сб
+            return schedule;
+              // return ScheduleList(
+              //   schedule: v.data!,
+              // ); // 1 - пн, 2 - вт, ..., 6 - сб
           } else if (v.hasError) {
             return Text("${v.error}");
           }

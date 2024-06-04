@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'http_parser.dart';
+import '../../../utils/http_parser.dart';
 
 class StaffPage extends StatefulWidget {
   const StaffPage({super.key});

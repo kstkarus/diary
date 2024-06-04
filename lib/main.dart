@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'auth_widget.dart';
-import 'main_widget.dart';
-import 'settings_widget.dart';
-import 'staff_info_widget.dart';
+import 'pages/auth/auth_widget.dart';
+import 'pages/main/main_widget.dart';
+import 'pages/main/settings/settings_widget.dart';
+import 'pages/main/staff/staff_info_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
