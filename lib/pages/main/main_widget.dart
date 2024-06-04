@@ -58,16 +58,10 @@ class _MainWidgetState extends State<MainWidget> {
           )
         ],
       ),
-      body: _pages[_currentPageIndex],
-      // PageView(
-      //   controller: _pageController,
-      //   onPageChanged: (int index) {
-      //     setState(() {
-      //       _currentPageIndex = index;
-      //     });
-      //   },
-      //   children: _pages,
-      //),
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: buildNavigationBar(),
     );
   }
@@ -78,11 +72,6 @@ class _MainWidgetState extends State<MainWidget> {
       onDestinationSelected: (int index) {
         setState(() {
           _currentPageIndex = index;
-          // _pageController.animateToPage(
-          //   index,
-          //   duration: const Duration(milliseconds: 600),
-          //   curve: Curves.easeInOut,
-          // );
         });
       },
       destinations: const [

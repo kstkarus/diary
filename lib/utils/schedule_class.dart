@@ -1,5 +1,6 @@
 import 'package:date_picker_timeline/extra/style.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:week_number/iso.dart';
@@ -10,14 +11,24 @@ class Schedule extends StatefulWidget {
     super.key,
     this.id = "5116", // эээ ватахе
     this.count = 14,
+    this.summarize = false,
   }) {
-    scheduleFuture = http_manager.getSchedule(id);
+    if (int.tryParse(id) != null) {
+      scheduleFuture = http_manager.getSchedule(id);
+      isStaff = false;
+    } else {
+      scheduleFuture = http_manager.getStaffSchedule(id);
+      isStaff = true;
+    }
   }
 
-  final String id;
-  final DateTime from = DateTime.now();
-  final int count;
+  late final bool isStaff;
+  final String id; // айди для получения расписания
+  final DateTime from = DateTime.now(); // начальная дата
+  final int count; // кол-во дней для отображения
+  final bool summarize; // нужно ли сохранять значения предметов
 
+  late final Future<Set<String>> nameOfLessons; // хранит названия предметов
   late final Future<Map<String, dynamic>> scheduleFuture;
 
   @override
@@ -54,7 +65,7 @@ class _ScheduleState extends State<Schedule> {
               );
             }
 
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LinearProgressIndicator());
           },
         ),
       ],
@@ -130,48 +141,66 @@ class _ScheduleState extends State<Schedule> {
           int countOfLessons = 0;
 
           buffer.add(
-              ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  //shrinkWrap: true,
-                  itemCount: scheduleCurrent.length,
-                  itemBuilder: (context, j) {
-                    var data = scheduleCurrent[j];
+              LayoutBuilder(
+                builder: (context, c) {
+                  return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      itemCount: scheduleCurrent.length,
+                      itemBuilder: (context, j) {
+                        var data = scheduleCurrent[j];
 
-                    bool shouldDiplay = isShouldDisplay(
-                        data["dayDate"].trim(),
-                        dayCurrent
-                    );
+                        bool shouldDiplay = isShouldDisplay(
+                            data["dayDate"].trim(),
+                            dayCurrent
+                        );
 
-                    if (shouldDiplay) {
-                      countOfLessons++;
+                        if (shouldDiplay) {
+                          countOfLessons++;
 
-                      return Card(
-                        child: ListTile(
-                          title: Text(
-                            data["disciplName"].trim(),
-                          ),
-                          subtitle: Wrap(
-                            spacing: 10,
-                            children: [
-                              Text(data["dayTime"].trim()),
-                              Text(data['buildNum'].trim()),
-                              Text(data["audNum"].trim()),
-                              Text(data["disciplType"].trim()),
-                              Text(data["dayDate"].trim()),
-                              Text(data["prepodName"].trim()),
-                            ],
-                          ),
-                        ),
-                      );
-                    } else {
-                      if (j == scheduleCurrent.length - 1  && countOfLessons == 0) {
-                        return buildBeerTime();
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                data["disciplName"].trim(),
+                              ),
+                              subtitle: Wrap(
+                                spacing: 10,
+                                children: [
+                                  Text(data["dayTime"].trim()),
+                                  Text(data['buildNum'].trim()),
+                                  Text(data["audNum"].trim()),
+                                  Text(data["disciplType"].trim()),
+                                  Text(data["dayDate"].trim()),
+                                  widget.isStaff
+                                      ? Text(data["group"].trim())
+                                      : InkWell(
+                                    child: Text(data["prepodName"].trim()),
+                                    onDoubleTap: () {
+                                      Navigator.pushNamed(context, "/StaffInfoPage", arguments: {
+                                        "name": data['prepodName'].trim(),
+                                        "login": data["prepodLogin"],
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        } else {
+                          if (j == scheduleCurrent.length - 1 &&
+                              countOfLessons == 0) {
+                            return Container(
+                                constraints: BoxConstraints(
+                                  minHeight: c.maxHeight,
+                                ),
+                                child: buildBeerTime()
+                            );
+                          }
+
+                          return const SizedBox.shrink();
+                        }
                       }
-
-                      return const SizedBox.shrink();
-                    }
-                  }
-              )
+                  );
+                })
           );
         } else {
           buffer.add(
@@ -184,22 +213,16 @@ class _ScheduleState extends State<Schedule> {
     return buffer;
   }
 
-  Column buildBeerTime() {
-    return Column(
-                        children: [
-                          const Text("There are no lessons on this day"),
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20), // Adjust the radius as needed
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            //elevation: 5.0,
-                            child: const Image(
-                              image: NetworkImage("https://cs8.pikabu.ru/post_img/big/2017/09/04/10/1504541843171655768.jpg"),
-                            ),
-                          )
-                        ],
-                      );
+  Widget buildBeerTime() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("There are no lessons on this day"),
+        ],
+      ),
+    );
   }
 
   Widget buildCard(var data) {

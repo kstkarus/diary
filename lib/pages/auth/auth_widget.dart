@@ -29,7 +29,7 @@ class _AuthWidgetState extends State<AuthWidget> {
     });
 
     getGroups(_controller.text).then((groups) {
-      if (int.tryParse(_controller.text) != null && groups.isNotEmpty && groups[0]["group"] == _controller.text) {
+      if (groups.isNotEmpty && groups[0]["group"] == _controller.text) {
         setState(() {
           String groupID = groups[0]["id"].toString();
           readyInstance.setString("GroupID", groupID);

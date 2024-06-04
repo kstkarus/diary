@@ -34,7 +34,7 @@ class _ExamsPageState extends State<ExamsPage> with AutomaticKeepAliveClientMixi
               Text("An error occurred ${v.error}");
             }
 
-            return const Center(child: CircularProgressIndicator());
+            return const LinearProgressIndicator();
           }
       ),
     );

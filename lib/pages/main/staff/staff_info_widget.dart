@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../utils/http_parser.dart';
-import '../../../utils/schedule_list.dart';
+//import '../../../utils/http_parser.dart';
+//import '../../../utils/schedule_list.dart';
+import '../../../utils/schedule_class.dart';
 
 class StaffInfoPage extends StatelessWidget {
   const StaffInfoPage({super.key});
@@ -13,19 +14,8 @@ class StaffInfoPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(arguments["name"]),
       ),
-      body: FutureBuilder(
-        future: getStaffSchedule(arguments["login"]),
-        builder: (context, v) {
-          if (v.hasData) {
-            return ScheduleList(
-                schedule: v.data!,
-            );
-          } else if (v.hasError) {
-            return Text("An error occurred: ${v.error}");
-          }
-
-          return const Center(child: CircularProgressIndicator());
-        }
+      body: Schedule(
+        id: arguments["login"],
       ),
     );
   }
