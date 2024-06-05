@@ -8,8 +8,6 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Group selection = Group.none;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
@@ -28,29 +26,71 @@ class SettingsPage extends StatelessWidget {
                 child: const Text("Reset group's num.")
             ),
             const SizedBox(height: 10),
-            SegmentedButton<Group>(
-              segments: const [
-                ButtonSegment<Group>(
-                  value: Group.first,
-                  label: Text("First"),
-                ),
-                ButtonSegment<Group>(
-                    value: Group.none,
-                    label: Text("None"),
-                ),
-                ButtonSegment<Group>(
-                    value: Group.second,
-                    label: Text("Second"),
-                ),
-              ],
-              selected: {selection},
-              onSelectionChanged: (newSelection) {
-                selection = newSelection.first;
-              },
-            ),
+            GroupButton(),
           ],
         ),
       ),
+    );
+  }
+}
+
+class GroupButton extends StatefulWidget {
+  const GroupButton({
+    super.key,
+  });
+
+  @override
+  State<GroupButton> createState() => _GroupButtonState();
+}
+
+class _GroupButtonState extends State<GroupButton> {
+  late final Future<SharedPreferences> prefs;
+  late int selection;
+
+  @override
+  void initState() {
+    super.initState();
+
+    prefs = SharedPreferences.getInstance();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: prefs,
+      builder: (context, v) {
+        if (v.hasData) {
+          selection = v.data!.getInt("groupType") ?? 0;
+
+          return SegmentedButton<int>(
+            segments: const [
+              ButtonSegment<int>(
+                value: 1,
+                label: Text("First"),
+              ),
+              ButtonSegment<int>(
+                value: 0,
+                label: Text("None"),
+              ),
+              ButtonSegment<int>(
+                value: 2,
+                label: Text("Second"),
+              ),
+            ],
+            selected: {selection},
+            onSelectionChanged: (newSelection) async {
+              setState(() {
+                selection = newSelection.first;
+              });
+
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setInt("groupType", newSelection.first);
+            },
+          );
+        }
+
+        return const Text("Wait till loading...");
+      }
     );
   }
 }

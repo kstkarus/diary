@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-//import '../../../utils/http_parser.dart';
-//import '../../../utils/schedule_list.dart';
+import '../../../utils/http_parser.dart' as http_manager;
 import '../../../utils/schedule_class.dart';
 
 class StaffInfoPage extends StatelessWidget {
@@ -14,8 +13,20 @@ class StaffInfoPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(arguments["name"]),
       ),
-      body: Schedule(
-        id: arguments["login"],
+      body: FutureBuilder(
+        future: http_manager.getStaffSchedule(
+            arguments["login"]
+        ),
+        builder: (context, v) {
+          if (v.hasData) {
+            return Schedule(
+              schedule: v.data!,
+              isStaff: true,
+            );
+          }
+
+          return const LinearProgressIndicator();
+        },
       ),
     );
   }

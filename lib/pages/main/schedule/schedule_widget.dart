@@ -1,24 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/schedule_class.dart';
 
 class SchedulePage extends StatefulWidget {
-  const SchedulePage({super.key});
+  const SchedulePage({
+    super.key,
+    required this.schedule,
+  });
+
+  final Map<String, dynamic> schedule;
 
   @override
   State<SchedulePage> createState() => _SchedulePageState();
 }
 
-class _SchedulePageState extends State<SchedulePage> with AutomaticKeepAliveClientMixin {
+class _SchedulePageState extends State<SchedulePage> {
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
+    return FutureBuilder(
+      future: SharedPreferences.getInstance(),
+      builder: (context, prefs) {
+        if (prefs.hasData) {
+          return Schedule(
+            schedule: widget.schedule,
+            groupType: prefs.data!.getInt("groupType") ?? 0,
+          );
+        }
 
-    return Schedule(
-      id: arguments["groupID"],
+        return const LinearProgressIndicator();
+      },
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

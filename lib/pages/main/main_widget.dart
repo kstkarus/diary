@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'schedule/schedule_widget.dart';
+import '../../utils/http_parser.dart' as http_manager;
 import 'exams/exams_widget.dart';
-import 'staff/staff_widget.dart';
+import 'summarize/summarize_widget.dart';
 
 class MainWidget extends StatefulWidget {
   const MainWidget({super.key});
@@ -13,13 +14,6 @@ class MainWidget extends StatefulWidget {
 
 class _MainWidgetState extends State<MainWidget> {
   int _currentPageIndex = 0;
-  //final PageController _pageController = PageController();
-
-  static const List<Widget> _pages = [
-    SchedulePage(),
-    ExamsPage(),
-    StaffPage()
-  ];
 
   Icon getThemeIcon(BuildContext context) {
     switch (AdaptiveTheme.of(context).mode) {
@@ -40,28 +34,50 @@ class _MainWidgetState extends State<MainWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Diary"),
+        title: Text("Diary ${arguments['id']}"),
         actions: [
+          IconButton(
+            // onPressed: () => _dialogBuilder(
+            //   context,
+            //   arguments['groupID'],
+            // ),
+            onPressed: (){
+              Navigator.pushNamed(context, "/SettingsPage");
+            },
+            icon: const Icon(Icons.edit),
+          ),
           IconButton(
               onPressed: () {
                 AdaptiveTheme.of(context).toggleThemeMode();
               },
               icon: getThemeIcon(context),
           ),
-          IconButton(
-            onPressed: (){
-              Navigator.pushNamed(context, "/SettingsPage");
-            },
-            icon: const Icon(Icons.settings_outlined),
-          )
         ],
       ),
-      body: IndexedStack(
-        index: _currentPageIndex,
-        children: _pages,
-      ),
+      body: FutureBuilder(
+        future: http_manager.getSchedule(arguments["groupID"]),
+        builder: (context, v) {
+          if (v.hasData) {
+            return IndexedStack(
+              index: _currentPageIndex,
+              children: [
+                SchedulePage(
+                    schedule: v.data!
+                ),
+                const ExamsPage(),
+                SummarizePage(
+                  schedule: v.data!
+                ),
+              ],
+            );
+          }
+
+          return const LinearProgressIndicator();
+        }),
       bottomNavigationBar: buildNavigationBar(),
     );
   }
@@ -86,11 +102,41 @@ class _MainWidgetState extends State<MainWidget> {
           label: "Exams",
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.person),
-          icon: Icon(Icons.person_outline),
-          label: "Staff",
+          selectedIcon: Icon(Icons.summarize),
+          icon: Icon(Icons.summarize_outlined),
+          label: "Summarize",
         ),
       ],
+    );
+  }
+
+  Future<void> _dialogBuilder(BuildContext context, String defaultValue) {
+    TextEditingController controller = TextEditingController(
+      text: defaultValue,
+    );
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit content'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Group",
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Submit'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

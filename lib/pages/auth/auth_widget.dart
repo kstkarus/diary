@@ -33,10 +33,12 @@ class _AuthWidgetState extends State<AuthWidget> {
         setState(() {
           String groupID = groups[0]["id"].toString();
           readyInstance.setString("GroupID", groupID);
+          readyInstance.setString("id", _controller.text);
           isChecking = false;
 
           Navigator.pushReplacementNamed(context, "/MainPage", arguments: {
             "groupID": groupID,
+            "id": _controller.text
           });
         });
       } else {
@@ -67,6 +69,7 @@ class _AuthWidgetState extends State<AuthWidget> {
         builder: (context, v) {
           if (v.hasData) {
             String cachedGroupID = v.data.getString("GroupID") ?? "";
+            String id = v.data.getString("id") ?? "";
 
             if (cachedGroupID != "") {
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -75,6 +78,7 @@ class _AuthWidgetState extends State<AuthWidget> {
                     "/MainPage",
                     arguments: {
                       'groupID': cachedGroupID,
+                      'id': id,
                     },
                     (_) => false,
                 );
