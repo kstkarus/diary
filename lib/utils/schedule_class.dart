@@ -31,6 +31,7 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        buildGroupNum(),
         buildEasyDateTimeLine(context),
         Expanded(
           child: PageView(
@@ -51,33 +52,46 @@ class _ScheduleState extends State<Schedule> {
     );
   }
 
-  bool isShouldDisplay(String type, DateTime date, int groupType) {
+  Widget buildGroupNum() {
+    switch (widget.groupType) {
+      case 1:
+        return const Text("первая подгруппа");
+      case 2:
+        return const Text("вторая подгруппа");
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  (bool, String) isShouldDisplay(String type, DateTime date, int groupType) {
     bool parity = date.weekNumber % 2 == 0;
+    const String templateFirst = "1 группа";
+    const String templateSecond = "2 группа";
     // 0 - не выбрана; 1 - первая; 2 - вторая
 
     switch (type) {
       case "":
-        return true;
+        return (true, type);
       case "неч":
-        return !parity;
+        return (!parity, type);
       case "чет":
-        return parity;
+        return (parity, type);
       case "неч/чет": // первая группа идет по нечетным
         if (groupType == 1) {
-          return !parity;
+          return (!parity, templateFirst);
         }
         if (groupType == 2) {
-          return parity;
+          return (parity, templateSecond);
         }
-        return true;
+        return (true, !parity ? templateFirst : templateSecond);
       case "чет/неч": // первая группа идет по четным
         if (groupType == 1) {
-          return parity;
+          return (parity, templateFirst);
         }
         if (groupType == 2) {
-          return !parity;
+          return (!parity, templateSecond);
         }
-        return true;
+        return (true, parity ? templateFirst : templateSecond);
       default:
         RegExp filter = RegExp(r'\d\d.\d\d');
 
@@ -93,7 +107,7 @@ class _ScheduleState extends State<Schedule> {
 
               for (var j in filter.allMatches(group).map((m)=>m[0])) {
                 if (currentDate == j) {
-                  return true;
+                  return (true, i == 0 ? templateFirst : templateSecond); // тк две группы, то i==0
                 }
               }
             }
@@ -102,16 +116,16 @@ class _ScheduleState extends State<Schedule> {
 
             for (var j in filter.allMatches(group).map((m)=>m[0])) {
               if (currentDate == j) {
-                return true;
+                return (true, groupType == 1 ? templateFirst : templateSecond);
               }
             }
           }
         } else {
-          return true;
+          return (true, type);
         }
     }
 
-    return false;
+    return (false, type);
   }
 
   List<Widget> buildSchedulePages(Map<String, dynamic> schedule) {
@@ -128,18 +142,18 @@ class _ScheduleState extends State<Schedule> {
             LayoutBuilder(
               builder: (context, c) {
                 return ListView.builder(
-                    //padding: const EdgeInsets.symmetric(horizontal: 0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     itemCount: scheduleCurrent.length,
                     itemBuilder: (context, j) {
                       var data = scheduleCurrent[j];
 
-                      bool shouldDiplay = isShouldDisplay(
+                      (bool, String) shouldDiplay = isShouldDisplay(
                           data["dayDate"]!.trim(),
                           dayCurrent,
                           widget.groupType,
                       );
 
-                      if (shouldDiplay) {
+                      if (shouldDiplay.$1) {
                         countOfLessons++;
 
                         return Card(
@@ -154,7 +168,8 @@ class _ScheduleState extends State<Schedule> {
                                 Text(data['buildNum'].trim()),
                                 Text(data["audNum"].trim()),
                                 Text(data["disciplType"].trim()),
-                                Text(data["dayDate"].trim()),
+                                Text(shouldDiplay.$2),
+                                //Text(data["dayDate"].trim()),
                                 widget.isStaff
                                     ? Text(data["group"].trim())
                                     : InkWell(
@@ -205,25 +220,6 @@ class _ScheduleState extends State<Schedule> {
         children: [
           Text("There are no lessons on this day"),
         ],
-      ),
-    );
-  }
-
-  Widget buildCard(var data) {
-    return Card(
-      child: ListTile(
-        title: Text(data["disciplName"]),
-        subtitle: Wrap(
-          spacing: 150,
-          children: [
-            Text(data["dayTime"].trim()),
-            Text(data['buildNum'].trim()),
-            Text(data["audNum"].trim()),
-            Text(data["disciplType"].trim()),
-            Text(data["dayDate"].trim()),
-            Text(data["prepodName"].trim()),
-          ],
-        ),
       ),
     );
   }
