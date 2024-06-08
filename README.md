@@ -11,7 +11,6 @@
 - Темная / Светлая темы и выбор цветового акцента (wip)
 
 # Preview
-<img src=https://github.com/kstkarus/diary/assets/150718645/022a7240-b175-43af-92c1-03b298bc3a46 width=230 />
 <img src=https://github.com/kstkarus/diary/assets/150718645/8702f4f1-1161-4396-b9f5-b0f52062aa44 width=230 />
 <img src=https://github.com/kstkarus/diary/assets/150718645/fe95a5c7-06c3-4084-87a6-8ac5e71a48d9 width=230 />
 <img src=https://github.com/kstkarus/diary/assets/150718645/4cded9c8-d853-411c-b448-498ef40951e5 width=230 />
