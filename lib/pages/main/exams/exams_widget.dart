@@ -24,6 +24,14 @@ class _ExamsPageState extends State<ExamsPage> with AutomaticKeepAliveClientMixi
           future: exams,
           builder: (context, v) {
             if (v.hasData) {
+              if (v.data!.isEmpty) {
+               return const Center(
+                 child: Text(
+                   "You don't have any exams yet"
+                 ),
+               );
+              }
+
               return ListView.builder(
                 itemCount: v.data!.length,
                 itemBuilder: (context, i) {

@@ -17,7 +17,7 @@ Future<List<dynamic>> getGroups(String group) async {
   };
 
   try {
-    final response = await http.post(groupsUrl, body: groups);
+    final response = await http.post(groupsUrl, body: groups).timeout(const Duration(seconds: 3));
 
     if (response.statusCode == 200) {
       List<dynamic> groupsDecode = jsonDecode(response.body);

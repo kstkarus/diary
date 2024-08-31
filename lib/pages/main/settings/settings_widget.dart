@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum Group { none, first, second }
-
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -13,31 +11,66 @@ class SettingsPage extends StatelessWidget {
         title: const Text("Settings"),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                onPressed: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  prefs.setString("GroupID", "");
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            //mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SettingsButton(title: "Group type", trailing: GroupButton()),
+              SettingsButton(title: "Log out", func: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setString("GroupID", "");
 
+                if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(context, "/AuthPage", (_) => false);
-                },
-                child: const Text("Reset group's num.")
-            ),
-            const SizedBox(height: 10),
-            GroupButton(),
-          ],
+                }
+              }),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class GroupButton extends StatefulWidget {
-  const GroupButton({
+class SettingsButton extends StatefulWidget {
+  const SettingsButton({
     super.key,
+    required this.title,
+    this.func,
+    this.trailing,
   });
+
+  final String title;
+  final Widget? trailing;
+  final Function? func;
+
+  @override
+  State<SettingsButton> createState() => _SettingsButtonState();
+}
+
+class _SettingsButtonState extends State<SettingsButton> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.hardEdge,
+      child: InkWell(
+        onTap: widget.func != null ? () {
+          widget.func!();
+        } : null,
+        child: ListTile(
+          title: Text(widget.title),
+          trailing: widget.trailing,
+        ),
+      ),
+    );
+  }
+}
+
+const List<String> list = <String>['None', 'First', 'Second'];
+
+class GroupButton extends StatefulWidget {
+  const GroupButton({super.key});
 
   @override
   State<GroupButton> createState() => _GroupButtonState();
@@ -45,7 +78,7 @@ class GroupButton extends StatefulWidget {
 
 class _GroupButtonState extends State<GroupButton> {
   late final Future<SharedPreferences> prefs;
-  late int selection;
+  String selected = list.first;
 
   @override
   void initState() {
@@ -60,36 +93,29 @@ class _GroupButtonState extends State<GroupButton> {
       future: prefs,
       builder: (context, v) {
         if (v.hasData) {
-          selection = v.data!.getInt("groupType") ?? 0;
+          return DropdownMenu(
+              initialSelection: list.elementAt(v.data!.getInt("groupType") ?? list.indexOf(selected)),
+              dropdownMenuEntries: list.map<DropdownMenuEntry>((String value) {
+                return DropdownMenuEntry(
+                    value: value,
+                    label: value,
+                );
+              }).toList(),
+              inputDecorationTheme: const InputDecorationTheme(
+                outlineBorder: BorderSide.none,
+                border: InputBorder.none
+              ),
+              onSelected: (value) {
+                setState(() {
+                  selected = value;
+                });
 
-          return SegmentedButton<int>(
-            segments: const [
-              ButtonSegment<int>(
-                value: 1,
-                label: Text("First"),
-              ),
-              ButtonSegment<int>(
-                value: 0,
-                label: Text("None"),
-              ),
-              ButtonSegment<int>(
-                value: 2,
-                label: Text("Second"),
-              ),
-            ],
-            selected: {selection},
-            onSelectionChanged: (newSelection) async {
-              setState(() {
-                selection = newSelection.first;
-              });
-
-              final prefs = await SharedPreferences.getInstance();
-              prefs.setInt("groupType", newSelection.first);
-            },
+                v.data!.setInt("groupType", list.indexOf(value));
+              }
           );
         }
 
-        return const Text("Wait till loading...");
+        return const CircularProgressIndicator();
       }
     );
   }

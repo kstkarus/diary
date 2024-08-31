@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'pages/auth/auth_widget.dart';
+import 'pages/auth/welcome_widget.dart';
 import 'pages/main/main_widget.dart';
 import 'pages/main/settings/settings_widget.dart';
 import 'pages/main/staff/staff_info_widget.dart';
@@ -26,10 +27,12 @@ class MyApp extends StatelessWidget {
       light: ThemeData(
         colorScheme: _defaultLightColorScheme,
         useMaterial3: true,
+        fontFamily: 'NeueMachina'
       ),
       dark: ThemeData(
         colorScheme: _defaultDarkColorScheme,
         useMaterial3: true,
+        fontFamily: 'NeueMachina'
       ),
       builder: (theme, darkTheme) => MaterialApp(
         title: 'Diary',
@@ -37,6 +40,7 @@ class MyApp extends StatelessWidget {
         darkTheme: darkTheme,
         initialRoute: "/AuthPage",
         routes: {
+          //"/WelcomePage": (context) => const WelcomePage(),
           "/AuthPage": (context) => const AuthWidget(),
           "/MainPage": (context) => const MainWidget(),
           "/SettingsPage": (context) => const SettingsPage(),
