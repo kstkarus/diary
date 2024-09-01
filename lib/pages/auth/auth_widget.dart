@@ -2,6 +2,7 @@ import 'package:diary/pages/auth/welcome_widget.dart';
 import 'package:diary/utils/background_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../utils/http_parser.dart';
 
 class AuthWidget extends StatefulWidget {
@@ -82,7 +83,7 @@ class _AuthWidgetState extends State<AuthWidget> {
             String cachedGroupID = v.data.getString("GroupID") ?? "";
             String id = v.data.getString("id") ?? "";
 
-            if (cachedGroupID != "") {
+            if (cachedGroupID.isNotEmpty && id.isNotEmpty) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushNamedAndRemoveUntil(
                     context,
@@ -166,10 +167,15 @@ class _AuthWidgetState extends State<AuthWidget> {
                   const Spacer(
                     flex: 11,
                   ),
-                  Text(
-                    "github.com/kstkarus/diary",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
+                  InkWell(
+                    onTap: () {
+                      launchUrl(Uri.parse("https://github.com/kstkarus/diary"));
+                    },
+                    child: Text(
+                      "github.com/kstkarus/diary",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                     ),
                   ),
                   const Spacer(
