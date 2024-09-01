@@ -34,6 +34,7 @@ class _AuthWidgetState extends State<AuthWidget> {
     }
 
     setState(() {
+      isError = false;
       isChecking = true;
     });
 
@@ -139,14 +140,6 @@ class _AuthWidgetState extends State<AuthWidget> {
                 children: [
                   const Spacer(
                     flex: 12,
-                  ),
-                  const Text(
-                    "diary",
-                    style: TextStyle(
-                        //fontSize: 60,
-                        //fontWeight: FontWeight.w900,
-                        //fontFamily: "",
-                    ),
                   ),
                   TextField(
                     controller: _controller,
