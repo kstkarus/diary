@@ -8,11 +8,13 @@ class Schedule extends StatefulWidget {
   Schedule({
     super.key,
     required this.schedule,
+    this.sorting = true,
     this.groupType = 0,
     this.count = 14,
     this.isStaff = false,
   });
 
+  final bool sorting;
   final int groupType;
   final bool isStaff;
   final Map<String, dynamic> schedule;
@@ -147,11 +149,11 @@ class _ScheduleState extends State<Schedule> {
                     itemBuilder: (context, j) {
                       var data = scheduleCurrent[j];
 
-                      (bool, String) shouldDiplay = isShouldDisplay(
+                      (bool, String) shouldDiplay = widget.sorting ? isShouldDisplay(
                           data["dayDate"]!.trim(),
                           dayCurrent,
                           widget.groupType,
-                      );
+                      ) : (true, data["dayDate"]!.trim());
 
                       if (shouldDiplay.$1) {
                         countOfLessons++;

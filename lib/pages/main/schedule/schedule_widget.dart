@@ -23,6 +23,7 @@ class _SchedulePageState extends State<SchedulePage> {
         if (prefs.hasData) {
           return Schedule(
             schedule: widget.schedule,
+            sorting: prefs.data!.getBool("groupSorting") ?? true,
             groupType: prefs.data!.getInt("groupType") ?? 0,
           );
         }

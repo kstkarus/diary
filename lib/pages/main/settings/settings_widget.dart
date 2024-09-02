@@ -11,24 +11,68 @@ class SettingsPage extends StatelessWidget {
         title: const Text("Settings"),
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            //mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SettingsButton(title: "Group type", trailing: GroupButton()),
-              SettingsButton(title: "Log out", func: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setString("GroupID", "");
+        child: FutureBuilder(
+          future: SharedPreferences.getInstance(),
+          builder: (context, v) {
+            if (v.hasData) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SettingsButton(title: "Group type", trailing: GroupButton(sharedPreferences: v.data!)),
+                    SettingsButton(title: "Schedule filter", trailing: SwitchWidget(sharedPreferences: v.data!)),
+                    const Divider(
+                      indent: 8,
+                      endIndent: 8,
+                    ),
+                    SettingsButton(title: "Log out", func: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.setString("GroupID", "");
 
-                if (context.mounted) {
-                  Navigator.pushNamedAndRemoveUntil(context, "/AuthPage", (_) => false);
-                }
-              }),
-            ],
-          ),
+                      if (context.mounted) {
+                        Navigator.pushNamedAndRemoveUntil(context, "/AuthPage", (_) => false);
+                      }
+                    }),
+                  ],
+                ),
+              );
+            }
+
+            return const LinearProgressIndicator();
+          }
         ),
       ),
+    );
+  }
+}
+
+class SwitchWidget extends StatefulWidget {
+  const SwitchWidget({
+    super.key, required this.sharedPreferences,
+  });
+
+  final SharedPreferences sharedPreferences;
+
+  @override
+  State<SwitchWidget> createState() => _SwitchWidgetState();
+}
+
+class _SwitchWidgetState extends State<SwitchWidget> {
+  bool value = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Switch(
+      value: widget.sharedPreferences.getBool("groupSorting") ?? value,
+      onChanged: (bool newValue) async {
+        setState(() {
+          value = newValue;
+        });
+
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setBool("groupSorting", newValue);
+      },
     );
   }
 }
@@ -70,53 +114,40 @@ class _SettingsButtonState extends State<SettingsButton> {
 const List<String> list = <String>['None', 'First', 'Second'];
 
 class GroupButton extends StatefulWidget {
-  const GroupButton({super.key});
+  const GroupButton({super.key, required this.sharedPreferences});
+
+  final SharedPreferences sharedPreferences;
 
   @override
   State<GroupButton> createState() => _GroupButtonState();
 }
 
 class _GroupButtonState extends State<GroupButton> {
-  late final Future<SharedPreferences> prefs;
   String selected = list.first;
 
   @override
-  void initState() {
-    super.initState();
-
-    prefs = SharedPreferences.getInstance();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: prefs,
-      builder: (context, v) {
-        if (v.hasData) {
-          return DropdownMenu(
-              initialSelection: list.elementAt(v.data!.getInt("groupType") ?? list.indexOf(selected)),
-              dropdownMenuEntries: list.map<DropdownMenuEntry>((String value) {
-                return DropdownMenuEntry(
-                    value: value,
-                    label: value,
-                );
-              }).toList(),
-              inputDecorationTheme: const InputDecorationTheme(
-                outlineBorder: BorderSide.none,
-                border: InputBorder.none
-              ),
-              onSelected: (value) {
-                setState(() {
-                  selected = value;
-                });
+    SharedPreferences v = widget.sharedPreferences;
 
-                v.data!.setInt("groupType", list.indexOf(value));
-              }
+    return DropdownMenu(
+        initialSelection: list.elementAt(v.getInt("groupType") ?? list.indexOf(selected)),
+        dropdownMenuEntries: list.map<DropdownMenuEntry>((String value) {
+          return DropdownMenuEntry(
+              value: value,
+              label: value,
           );
-        }
+        }).toList(),
+        inputDecorationTheme: const InputDecorationTheme(
+          outlineBorder: BorderSide.none,
+          border: InputBorder.none
+        ),
+        onSelected: (value) {
+          setState(() {
+            selected = value;
+          });
 
-        return const CircularProgressIndicator();
-      }
+          v.setInt("groupType", list.indexOf(value));
+        }
     );
   }
 }
