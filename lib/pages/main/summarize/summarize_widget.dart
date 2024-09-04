@@ -26,17 +26,21 @@ class SummarizePage extends StatefulWidget {
 class _SummarizePageState extends State<SummarizePage> {
   @override
   Widget build(BuildContext context) {
-    Map<String, Set<int>> nameOfLessons = {};
+    Map<String, Set<String>> nameOfLessons = {};
 
     for (int i = 1; i < 7; i++) {
       var scheduleCurrent = widget.schedule[i.toString()];
 
       if (scheduleCurrent != null) {
         for (var info in scheduleCurrent) {
-          if (nameOfLessons.containsKey(info["disciplName"])) {
-            nameOfLessons[info["disciplName"]]!.add(i);
+          String prepodName = info["prepodName"].trim();
+          String disciplName = info["disciplName"].trim();
+          String disciplType = info["disciplType"].trim();
+
+          if (nameOfLessons.containsKey(prepodName)) {
+            nameOfLessons[prepodName]!.add("$disciplName $disciplType");
           } else {
-            nameOfLessons[info["disciplName"]] = <int>{i};
+            nameOfLessons[prepodName] = <String>{"$disciplName $disciplType"};
           }
         }
       }
@@ -48,35 +52,18 @@ class _SummarizePageState extends State<SummarizePage> {
           itemCount: nameOfLessons.length, // кол-во дней в неделю
           shrinkWrap: true,
           itemBuilder: (c, i) {
+            String key = nameOfLessons.keys.elementAt(i);
+            String value = nameOfLessons[key].toString();
+
             return Card(
                 child: ListTile(
-                  title: Text(nameOfLessons.keys.elementAt(i)),
-                  subtitle: buildWeekNames(nameOfLessons.values.elementAt(i)),
-                  trailing: const Text(
-                    "---",
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  )
+                  title: Text(key),
+                  subtitle: Text(value.substring(1, value.length - 1)),
+                  trailing: const Icon(Icons.person)
                 )
             );
           },
       ),
-    );
-  }
-
-  Widget buildWeekNames(Set<int> nameOfLessons) {
-    List<Widget> buffer = [];
-
-    for (var v in nameOfLessons) {
-      buffer.add(
-        Text(weekdayName[v - 1])
-      );
-    }
-
-    return Wrap(
-      spacing: 10,
-      children: buffer,
     );
   }
 }

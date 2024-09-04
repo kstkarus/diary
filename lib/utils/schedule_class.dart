@@ -158,15 +158,24 @@ class _ScheduleState extends State<Schedule> {
                       if (shouldDiplay.$1) {
                         countOfLessons++;
 
+                        String rawTime = data["dayTime"].trim();
+                        DateFormat hm = DateFormat("HH:mm");
+                        DateTime timeStart = hm.parse(rawTime);
+                        DateTime timeEnd = timeStart.add(const Duration(hours: 1, minutes: 30));
+                        String rawEnd = hm.format(timeEnd);
+
                         return Card(
                           child: ListTile(
                             title: Text(
                               data["disciplName"]!.trim(),
+                              style: TextStyle(
+                                decoration: isPassed(dayCurrent, timeEnd),
+                              )
                             ),
                             subtitle: Wrap(
                               spacing: 10,
                               children: [
-                                Text(data["dayTime"].trim()),
+                                Text("$rawTime - $rawEnd"),
                                 Text(data['buildNum'].trim()),
                                 Text(data["audNum"].trim()),
                                 Text(data["disciplType"].trim()),
@@ -212,6 +221,21 @@ class _ScheduleState extends State<Schedule> {
     }
 
     return buffer;
+  }
+
+  TextDecoration isPassed(DateTime dayCurrent, DateTime timeEnd) {
+    if (dayCurrent == widget.from) {
+      DateTime time = widget.from.copyWith(
+          hour: timeEnd.hour,
+          minute: timeEnd.minute
+      );
+
+      if (time.isBefore(widget.from)) {
+        return TextDecoration.lineThrough;
+      }
+    }
+
+    return TextDecoration.none;
   }
 
   Widget buildBeerTime() {

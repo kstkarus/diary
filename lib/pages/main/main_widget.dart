@@ -48,7 +48,7 @@ class _MainWidgetState extends State<MainWidget> {
             onPressed: (){
               Navigator.pushNamed(context, "/SettingsPage");
             },
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.settings),
           ),
           IconButton(
               onPressed: () {

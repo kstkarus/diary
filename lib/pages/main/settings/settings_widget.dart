@@ -15,27 +15,36 @@ class SettingsPage extends StatelessWidget {
           future: SharedPreferences.getInstance(),
           builder: (context, v) {
             if (v.hasData) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SettingsButton(title: "Group type", trailing: GroupButton(sharedPreferences: v.data!)),
-                    SettingsButton(title: "Schedule filter", trailing: SwitchWidget(sharedPreferences: v.data!)),
-                    const Divider(
-                      indent: 8,
-                      endIndent: 8,
-                    ),
-                    SettingsButton(title: "Log out", func: () async {
+              return Column(
+                //mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SettingsButton(
+                      title: "Schedule filter",
+                      subtitle: "Filtering the schedule based on date, parity, and so on",
+                      leading: const Icon(Icons.filter_alt_outlined),
+                      trailing: SwitchWidget(sharedPreferences: v.data!)
+                  ),
+                  SettingsButton(
+                      title: "Group type",
+                      subtitle: "To view the schedule of a specific group only",
+                      leading: const Icon(Icons.filter_alt_outlined),
+                      trailing: GroupButton(sharedPreferences: v.data!),
+                  ),
+                  const Divider(
+                  ),
+                  SettingsButton(
+                    title: "Log out",
+                    leading: const Icon(Icons.logout_outlined),
+                    func: () async {
                       final prefs = await SharedPreferences.getInstance();
                       prefs.setString("GroupID", "");
 
                       if (context.mounted) {
                         Navigator.pushNamedAndRemoveUntil(context, "/AuthPage", (_) => false);
                       }
-                    }),
-                  ],
-                ),
+                    }
+                  ),
+                ],
               );
             }
 
@@ -81,11 +90,15 @@ class SettingsButton extends StatefulWidget {
   const SettingsButton({
     super.key,
     required this.title,
+    this.subtitle,
+    this.leading,
     this.func,
     this.trailing,
   });
 
+  final Widget? leading;
   final String title;
+  final String? subtitle;
   final Widget? trailing;
   final Function? func;
 
@@ -96,17 +109,14 @@ class SettingsButton extends StatefulWidget {
 class _SettingsButtonState extends State<SettingsButton> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.hardEdge,
-      child: InkWell(
-        onTap: widget.func != null ? () {
-          widget.func!();
-        } : null,
-        child: ListTile(
-          title: Text(widget.title),
-          trailing: widget.trailing,
-        ),
-      ),
+    return ListTile(
+      leading: widget.leading,
+      title: Text(widget.title),
+      subtitle: widget.subtitle != null ? Text(widget.subtitle!) : null,
+      trailing: widget.trailing,
+      onTap: widget.func != null ? () {
+        widget.func!();
+      } : null,
     );
   }
 }
