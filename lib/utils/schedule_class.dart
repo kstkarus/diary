@@ -40,9 +40,9 @@ class _ScheduleState extends State<Schedule> {
             onPageChanged: (int pageNumber) {
               setState(() {
                 _dateController.setDateAndAnimate(
-                    widget.from.add(Duration(days: pageNumber)),
-                curve: Curves.easeInOut,
-                duration: const Duration(milliseconds: 300),
+                  widget.from.add(Duration(days: pageNumber)),
+                  curve: Curves.easeInOut,
+                  duration: const Duration(milliseconds: 300),
                 );
               });
             },
@@ -97,26 +97,32 @@ class _ScheduleState extends State<Schedule> {
       default:
         RegExp filter = RegExp(r'\d\d.\d\d');
 
-        if (filter.hasMatch(type)) { // если в типе перечислены даты, то переходим к их обработке
+        if (filter.hasMatch(type)) {
+          // если в типе перечислены даты, то переходим к их обработке
           String currentDate = DateFormat('dd.MM').format(date);
 
           String infoSpaceless = type.replaceAll(" ", "");
           List<String> groups = infoSpaceless.split("/");
 
-          if (groupType == 0) { // если подгруппа не выбрана, то проходим по каждой дате
+          if (groupType == 0) {
+            // если подгруппа не выбрана, то проходим по каждой дате
             for (int i = 0; i < groups.length; i++) {
               String group = groups[i];
 
-              for (var j in filter.allMatches(group).map((m)=>m[0])) {
+              for (var j in filter.allMatches(group).map((m) => m[0])) {
                 if (currentDate == j) {
-                  return (true, i == 0 ? templateFirst : templateSecond); // тк две группы, то i==0
+                  return (
+                    true,
+                    i == 0 ? templateFirst : templateSecond
+                  ); // тк две группы, то i==0
                 }
               }
             }
           } else {
-            String group = groups[groupType - 1]; // если подгруппа выбрана, то проходим до/после слеша
+            String group = groups[groupType -
+                1]; // если подгруппа выбрана, то проходим до/после слеша
 
-            for (var j in filter.allMatches(group).map((m)=>m[0])) {
+            for (var j in filter.allMatches(group).map((m) => m[0])) {
               if (currentDate == j) {
                 return (true, groupType == 1 ? templateFirst : templateSecond);
               }
@@ -140,82 +146,79 @@ class _ScheduleState extends State<Schedule> {
       if (scheduleCurrent != null) {
         int countOfLessons = 0;
 
-        buffer.add(
-            LayoutBuilder(
-              builder: (context, c) {
-                return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    itemCount: scheduleCurrent.length,
-                    itemBuilder: (context, j) {
-                      var data = scheduleCurrent[j];
+        buffer.add(LayoutBuilder(builder: (context, c) {
+          return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              itemCount: scheduleCurrent.length,
+              itemBuilder: (context, j) {
+                var data = scheduleCurrent[j];
 
-                      (bool, String) shouldDiplay = widget.sorting ? isShouldDisplay(
-                          data["dayDate"]!.trim(),
-                          dayCurrent,
-                          widget.groupType,
-                      ) : (true, data["dayDate"]!.trim());
+                (bool, String) shouldDiplay = widget.sorting
+                    ? isShouldDisplay(
+                        data["dayDate"]!.trim(),
+                        dayCurrent,
+                        widget.groupType,
+                      )
+                    : (true, data["dayDate"]!.trim());
 
-                      if (shouldDiplay.$1) {
-                        countOfLessons++;
+                if (shouldDiplay.$1) {
+                  countOfLessons++;
 
-                        String rawTime = data["dayTime"].trim();
-                        DateFormat hm = DateFormat("HH:mm");
-                        DateTime timeStart = hm.parse(rawTime);
-                        DateTime timeEnd = timeStart.add(const Duration(hours: 1, minutes: 30));
-                        String rawEnd = hm.format(timeEnd);
+                  String rawTime = data["dayTime"].trim();
+                  DateFormat hm = DateFormat("HH:mm");
+                  DateTime timeStart = hm.parse(rawTime);
+                  DateTime timeEnd =
+                      timeStart.add(const Duration(hours: 1, minutes: 30));
+                  String rawEnd = hm.format(timeEnd);
 
-                        return Card(
-                          child: ListTile(
-                            title: Text(
-                              data["disciplName"]!.trim(),
-                              style: TextStyle(
-                                decoration: isPassed(dayCurrent, timeEnd),
-                              )
-                            ),
-                            subtitle: Wrap(
-                              spacing: 10,
-                              children: [
-                                Text("$rawTime - $rawEnd"),
-                                Text(data['buildNum'].trim()),
-                                Text(data["audNum"].trim()),
-                                Text(data["disciplType"].trim()),
-                                Text(shouldDiplay.$2),
-                                //Text(data["dayDate"].trim()),
-                                widget.isStaff
-                                    ? Text(data["group"].trim())
-                                    : InkWell(
+                  return Card(
+                    child: ListTile(
+                      title: Text(data["disciplName"]!.trim(),
+                          style: TextStyle(
+                            decoration: isPassed(dayCurrent, timeEnd),
+                          )),
+                      subtitle: Wrap(
+                        spacing: 10,
+                        children: [
+                          Text("$rawTime - $rawEnd"),
+                          Text(data['buildNum'].trim()),
+                          Text(data["audNum"].trim()),
+                          Text(data["disciplType"].trim()),
+                          Text(shouldDiplay.$2),
+                          //Text(data["dayDate"].trim()),
+                          widget.isStaff
+                              ? Text(data["group"].trim())
+                              : InkWell(
                                   child: Text(data["prepodName"].trim()),
                                   onDoubleTap: () {
-                                    Navigator.pushNamed(context, "/StaffInfoPage", arguments: {
-                                      "name": data['prepodName'].trim(),
-                                      "login": data["prepodLogin"],
-                                    });
+                                    Navigator.pushNamed(
+                                        context, "/StaffInfoPage",
+                                        arguments: {
+                                          "name": data['prepodName'].trim(),
+                                          "login": data["prepodLogin"],
+                                        });
                                   },
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
-                      } else {
-                        if (j == scheduleCurrent.length - 1 &&
-                            countOfLessons == 0) {
-                          return Container(
-                              constraints: BoxConstraints(
-                                minHeight: c.maxHeight,
-                              ),
-                              child: buildBeerTime()
-                          );
-                        }
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  if (j == scheduleCurrent.length - 1 && countOfLessons == 0) {
+                    return Container(
+                        constraints: BoxConstraints(
+                          minHeight: c.maxHeight,
+                        ),
+                        child: buildBeerTime());
+                  }
 
-                        return const SizedBox.shrink();
-                      }
-                    }
-                );
-              })
-        );
+                  return const SizedBox.shrink();
+                }
+              });
+        }));
       } else {
         buffer.add(
-            buildBeerTime(),
+          buildBeerTime(),
         );
       }
     }
@@ -225,10 +228,8 @@ class _ScheduleState extends State<Schedule> {
 
   TextDecoration isPassed(DateTime dayCurrent, DateTime timeEnd) {
     if (dayCurrent == widget.from) {
-      DateTime time = widget.from.copyWith(
-          hour: timeEnd.hour,
-          minute: timeEnd.minute
-      );
+      DateTime time =
+          widget.from.copyWith(hour: timeEnd.hour, minute: timeEnd.minute);
 
       if (time.isBefore(widget.from)) {
         return TextDecoration.lineThrough;
@@ -261,14 +262,11 @@ class _ScheduleState extends State<Schedule> {
       todayColor: Theme.of(context).colorScheme.tertiaryContainer,
       todayTextColor: Theme.of(context).colorScheme.onTertiaryContainer,
       dateTextStyle: defaultDateTextStyle.apply(
-          color: Theme.of(context).colorScheme.onBackground
-      ),
+          color: Theme.of(context).colorScheme.onBackground),
       dayTextStyle: defaultDayTextStyle.apply(
-          color: Theme.of(context).colorScheme.onBackground
-      ),
+          color: Theme.of(context).colorScheme.onBackground),
       monthTextStyle: defaultMonthTextStyle.apply(
-          color: Theme.of(context).colorScheme.onBackground
-      ),
+          color: Theme.of(context).colorScheme.onBackground),
       initialSelectedDate: widget.from,
       onDateChange: (selectedDate) {
         setState(() {
@@ -277,8 +275,7 @@ class _ScheduleState extends State<Schedule> {
               duration: const Duration(
                 milliseconds: 300,
               ),
-              curve: Curves.easeInOut
-          );
+              curve: Curves.easeInOut);
         });
       },
     );

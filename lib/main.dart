@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'NeueMachina'
       ),
       builder: (theme, darkTheme) => MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Diary',
         theme: theme,
         darkTheme: darkTheme,

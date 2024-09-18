@@ -49,20 +49,18 @@ class _SummarizePageState extends State<SummarizePage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: ListView.builder(
-          itemCount: nameOfLessons.length, // кол-во дней в неделю
-          shrinkWrap: true,
-          itemBuilder: (c, i) {
-            String key = nameOfLessons.keys.elementAt(i);
-            String value = nameOfLessons[key].toString();
+        itemCount: nameOfLessons.length, // кол-во дней в неделю
+        shrinkWrap: true,
+        itemBuilder: (c, i) {
+          String key = nameOfLessons.keys.elementAt(i);
+          String value = nameOfLessons[key].toString();
 
-            return Card(
-                child: ListTile(
+          return Card(
+              child: ListTile(
                   title: Text(key),
                   subtitle: Text(value.substring(1, value.length - 1)),
-                  trailing: const Icon(Icons.person)
-                )
-            );
-          },
+                  trailing: const Icon(Icons.person)));
+        },
       ),
     );
   }

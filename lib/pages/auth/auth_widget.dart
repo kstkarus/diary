@@ -20,9 +20,7 @@ class _AuthWidgetState extends State<AuthWidget> {
   bool isChecking = false;
 
   int pageIndex = 0;
-  PageController controller = PageController(
-      initialPage: 0
-  );
+  PageController controller = PageController(initialPage: 0);
 
   void _submitPressed(var readyInstance) {
     if (int.tryParse(_controller.text) == null) {
@@ -46,10 +44,8 @@ class _AuthWidgetState extends State<AuthWidget> {
           readyInstance.setString("id", _controller.text);
           isChecking = false;
 
-          Navigator.pushReplacementNamed(context, "/MainPage", arguments: {
-            "groupID": groupID,
-            "id": _controller.text
-          });
+          Navigator.pushReplacementNamed(context, "/MainPage",
+              arguments: {"groupID": groupID, "id": _controller.text});
         });
       } else {
         setState(() {
@@ -66,11 +62,8 @@ class _AuthWidgetState extends State<AuthWidget> {
   Widget build(BuildContext context) {
     void changePage() {
       pageIndex = 1;
-      controller.animateToPage(
-          pageIndex,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut
-      );
+      controller.animateToPage(pageIndex,
+          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
 
     return Scaffold(
@@ -87,31 +80,28 @@ class _AuthWidgetState extends State<AuthWidget> {
             if (cachedGroupID.isNotEmpty && id.isNotEmpty) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    "/MainPage",
-                    arguments: {
-                      'groupID': cachedGroupID,
-                      'id': id,
-                    },
-                    (_) => false,
+                  context,
+                  "/MainPage",
+                  arguments: {
+                    'groupID': cachedGroupID,
+                    'id': id,
+                  },
+                  (_) => false,
                 );
               });
             } else {
               return SafeArea(
-                  child: Stack(
-                      children: [
-                        const BackgroundWidget(),
-                        PageView(
-                          controller: controller,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            WelcomePage(changePage: changePage),
-                            buildAuthForm(v.data, isError, isChecking),
-                          ],
-                        ),
-                      ]
-                  )
-              );
+                  child: Stack(children: [
+                const BackgroundWidget(),
+                PageView(
+                  controller: controller,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    WelcomePage(changePage: changePage),
+                    buildAuthForm(v.data, isError, isChecking),
+                  ],
+                ),
+              ]));
             }
           }
 
@@ -126,12 +116,10 @@ class _AuthWidgetState extends State<AuthWidget> {
   }
 
   Widget buildAuthForm(var prefs, bool isError, bool isChecking) {
-
     return Center(
       child: Stack(
         children: [
-          if (isChecking)
-            const LinearProgressIndicator(),
+          if (isChecking) const LinearProgressIndicator(),
           Center(
             child: SizedBox(
               width: 250,
@@ -152,10 +140,10 @@ class _AuthWidgetState extends State<AuthWidget> {
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                      onPressed: () {
-                        _submitPressed(prefs);
-                      },
-                      child: const Text("Submit"),
+                    onPressed: () {
+                      _submitPressed(prefs);
+                    },
+                    child: const Text("Submit"),
                   ),
                   const Spacer(
                     flex: 11,
