@@ -1,6 +1,7 @@
 import 'package:diary/pages/auth/welcome_widget.dart';
 import 'package:diary/utils/background_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../utils/http_parser.dart';
@@ -13,7 +14,9 @@ class AuthWidget extends StatefulWidget {
 }
 
 class _AuthWidgetState extends State<AuthWidget> {
-  final TextEditingController _controller = TextEditingController();
+  String? _searchingWithQuery;
+  late List<String> _lastOptions = <String>[];
+
   Future prefs = SharedPreferences.getInstance();
   bool isError = false;
   String helpfulText = "";
@@ -23,7 +26,7 @@ class _AuthWidgetState extends State<AuthWidget> {
   PageController controller = PageController(initialPage: 0);
 
   void _submitPressed(var readyInstance) {
-    if (int.tryParse(_controller.text) == null) {
+    if (int.tryParse(_searchingWithQuery!) == null) {
       setState(() {
         isError = true;
       });
@@ -36,16 +39,16 @@ class _AuthWidgetState extends State<AuthWidget> {
       isChecking = true;
     });
 
-    getGroups(_controller.text).then((groups) {
-      if (groups.isNotEmpty && groups[0]["group"] == _controller.text) {
+    getGroups(_searchingWithQuery!).then((groups) {
+      if (groups.isNotEmpty && groups[0]["group"] == _searchingWithQuery!) {
         setState(() {
           String groupID = groups[0]["id"].toString();
           readyInstance.setString("GroupID", groupID);
-          readyInstance.setString("id", _controller.text);
+          readyInstance.setString("id", _searchingWithQuery!);
           isChecking = false;
 
           Navigator.pushReplacementNamed(context, "/MainPage",
-              arguments: {"groupID": groupID, "id": _controller.text});
+              arguments: {"groupID": groupID, "id": _searchingWithQuery!});
         });
       } else {
         setState(() {
@@ -129,15 +132,50 @@ class _AuthWidgetState extends State<AuthWidget> {
                   const Spacer(
                     flex: 12,
                   ),
-                  TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      labelText: "Group's number",
-                      hintText: "Type here",
-                      border: const OutlineInputBorder(),
-                      errorText: isError ? "Something went wrong" : null,
-                    ),
+                  TypeAheadField(
+                    suggestionsCallback: (search) async {
+                      _searchingWithQuery = search;
+
+                      final Iterable<dynamic> options =
+                          await getGroups(_searchingWithQuery!);
+
+                      if (_searchingWithQuery != search) {
+                        return _lastOptions;
+                      }
+
+                      _lastOptions =
+                          options.map((v) => v["group"].toString()).toList();
+
+                      return _lastOptions;
+                    },
+                    builder: (context, controller, focusNode) {
+                      return TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+                        decoration: InputDecoration(
+                          labelText: "Group's number",
+                          hintText: "Type here",
+                          border: const OutlineInputBorder(),
+                          errorText: isError ? "Something went wrong" : null,
+                        ),
+                      );
+                    },
+                    itemBuilder: (context, string) {
+                      return ListTile(title: Text(string));
+                    },
+                    onSelected: (String value) {
+
+                    },
                   ),
+                  // TextField(
+                  //   controller: _controller,
+                  //   decoration: InputDecoration(
+                  //     labelText: "Group's number",
+                  //     hintText: "Type here",
+                  //     border: const OutlineInputBorder(),
+                  //     errorText: isError ? "Something went wrong" : null,
+                  //   ),
+                  // ),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
