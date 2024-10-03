@@ -73,13 +73,14 @@ class SettingsPage extends StatelessWidget {
                             barrierDismissible: false,
                             builder: (context) {
                               return AlertDialog(
-                                title: const Text("Are you sure?"),
+                                title: const Text("Log out?"),
                                 content: const Text(
                                     "All saved data will be deleted, including preferences"),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
+                                      v.data!.clear();
                                     },
                                     child: const Text("No"),
                                   ),
