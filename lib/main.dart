@@ -36,13 +36,14 @@ class MyApp extends StatelessWidget {
     return AdaptiveTheme(
       initial: savedThemeMode ?? AdaptiveThemeMode.system,
       light: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: colorScheme),
+        colorSchemeSeed: colorScheme,
         useMaterial3: true,
         fontFamily: 'NeueMachina'
       ),
       dark: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: colorScheme, brightness: Brightness.dark),
+        colorSchemeSeed: colorScheme,
         useMaterial3: true,
+        brightness: Brightness.dark,
         fontFamily: 'NeueMachina'
       ),
       builder: (theme, darkTheme) => MaterialApp(
