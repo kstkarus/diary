@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class WelcomePage extends StatelessWidget {
-  const WelcomePage({
-    super.key,
-    required this.changePage
-  });
+  const WelcomePage({super.key, required this.changePage});
 
   final Function changePage;
 
@@ -20,7 +18,7 @@ class WelcomePage extends StatelessWidget {
           const Spacer(
             flex: 4,
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,10 +37,12 @@ class WelcomePage extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 3
-                  ),
+                      letterSpacing: 3),
                 ),
-              ],
+              ]
+                  .animate(interval: 600.ms)
+                  .fadeIn(duration: 900.ms, delay: 300.ms)
+                  .move(begin: const Offset(-16, 0), curve: Curves.easeOutQuad),
             ),
           ),
           const Spacer(
@@ -53,7 +53,7 @@ class WelcomePage extends StatelessWidget {
               changePage();
             },
             child: const Text("Get started..."),
-          ),
+          ).animate(delay: 1500.ms).fadeIn(),
           const Spacer(
             flex: 1,
           )

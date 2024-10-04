@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       light: ThemeData(
         colorSchemeSeed: colorScheme,
         useMaterial3: true,
-        fontFamily: 'NeueMachina'
+        fontFamily: 'NeueMachina',
       ),
       dark: ThemeData(
         colorSchemeSeed: colorScheme,

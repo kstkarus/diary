@@ -1,6 +1,8 @@
 import 'package:date_picker_timeline/extra/style.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:diary/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:week_number/iso.dart';
 
@@ -47,7 +49,7 @@ class _ScheduleState extends State<Schedule> {
               });
             },
             controller: _pageController,
-            children: buildSchedulePages(widget.schedule),
+            children: buildSchedulePages(widget.schedule).animate().fadeIn(),
           ),
         ),
       ],
@@ -171,6 +173,8 @@ class _ScheduleState extends State<Schedule> {
                       timeStart.add(const Duration(hours: 1, minutes: 30));
                   String rawEnd = hm.format(timeEnd);
 
+                  String prepodName = data["prepodName"].toString().trim().toTitleCase;
+
                   return Card(
                     child: ListTile(
                       title: Text(data["disciplName"]!.trim(),
@@ -184,17 +188,17 @@ class _ScheduleState extends State<Schedule> {
                           Text(data['buildNum'].trim()),
                           Text(data["audNum"].trim()),
                           Text(data["disciplType"].trim()),
-                          Text(shouldDiplay.$2),
+                          Text(shouldDiplay.$2.trim()),
                           //Text(data["dayDate"].trim()),
                           widget.isStaff
                               ? Text(data["group"].trim())
                               : InkWell(
-                                  child: Text(data["prepodName"].trim()),
+                                  child: Text(prepodName),
                                   onDoubleTap: () {
                                     Navigator.pushNamed(
                                         context, "/StaffInfoPage",
                                         arguments: {
-                                          "name": data['prepodName'].trim(),
+                                          "name": prepodName,
                                           "login": data["prepodLogin"],
                                         });
                                   },
@@ -270,12 +274,13 @@ class _ScheduleState extends State<Schedule> {
       initialSelectedDate: widget.from,
       onDateChange: (selectedDate) {
         setState(() {
-          _pageController.animateToPage(
-              selectedDate.ordinalDate - widget.from.ordinalDate,
-              duration: const Duration(
-                milliseconds: 300,
-              ),
-              curve: Curves.easeInOut);
+          _pageController.jumpToPage(selectedDate.ordinalDate - widget.from.ordinalDate);
+          // _pageController.animateToPage(
+          //     selectedDate.ordinalDate - widget.from.ordinalDate,
+          //     duration: const Duration(
+          //       milliseconds: 300,
+          //     ),
+          //     curve: Curves.easeInOut);
         });
       },
     );

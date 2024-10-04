@@ -166,7 +166,10 @@ class _AuthWidgetState extends State<AuthWidget> {
               ),
               InkWell(
                 onTap: () {
-                  launchUrl(Uri.parse("https://github.com/kstkarus/diary"));
+                  launchUrl(
+                    webOnlyWindowName: "_self",
+                    Uri.parse("https://github.com/kstkarus/diary")
+                  );
                 },
                 child: Text(
                   "github.com/kstkarus/diary",
