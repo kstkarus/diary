@@ -1,7 +1,7 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:diary/utils/http_parser.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:diary/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -42,17 +42,6 @@ class SettingsPage extends StatelessWidget {
                       leading: const Icon(Icons.filter_alt_outlined),
                       trailing: GroupButton(sharedPreferences: v.data!),
                     ),
-                    // SettingsButton(
-                    //   title: "Days in the schedule",
-                    //   subtitle: Slider(
-                    //     value: 14,
-                    //     min: 14,
-                    //     max: 30,
-                    //     divisions: 26,
-                    //     onChanged: (double newValue) {},
-                    //   ),
-                    //   leading: const Icon(Icons.timelapse_outlined),
-                    // ),
                     const Divider(),
                     SettingsButton(
                       title: "Compare schedule",
@@ -217,49 +206,67 @@ class _ColorAccentWidgetState extends State<ColorAccentWidget> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text("Will be implemented in future updates."),
-        ));
+        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        //   behavior: SnackBarBehavior.floating,
+        //   content: Text("Will be implemented in future updates."),
+        // ));
 
-        // showDialog(
-        //     context: context,
-        //     barrierDismissible: false,
-        //     builder: (context) {
-        //       return AlertDialog(
-        //         title: const Text("Color accent"),
-        //         content: Wrap(
-        //           //spacing: 0,
-        //           runSpacing: 10,
-        //           children: [
-        //             for (var v in Colors.primaries)
-        //               ElevatedButton(
-        //                   onPressed: () {
-        //                   },
-        //                   child: null,
-        //                   style: ElevatedButton.styleFrom(
-        //                     shape: const CircleBorder(),
-        //                     backgroundColor: v,
-        //                     minimumSize: const Size(40, 40)
-        //                   ),
-        //               )
-        //           ],
-        //         ),
-        //         actions: [
-        //           TextButton(
-        //             onPressed: () {
-        //               Navigator.pop(context);
-        //             },
-        //             child: const Text("Okay"),
-        //           ),
-        //         ],
-        //       );
-        //     });
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Color accent"),
+                content: Wrap(
+                  //spacing: 0,
+                  runSpacing: 10,
+                  children: [
+                    for (var v in Colors.primaries)
+                      ElevatedButton(
+                        onPressed: () async {
+                          AdaptiveTheme.of(context).setTheme(
+                            light: ThemeData(
+                                useMaterial3: true,
+                                brightness: Brightness.light,
+                                colorSchemeSeed: v,
+                                fontFamily: 'NeueMachina'),
+                            dark: ThemeData(
+                                useMaterial3: true,
+                                brightness: Brightness.dark,
+                                colorSchemeSeed: v,
+                                fontFamily: 'NeueMachina'),
+                          );
+
+                          final prefs =
+                              await SharedPreferences.getInstance();
+                          setState(() {
+                            prefs.setString(
+                                "themeColor", v.toHex(withAlpha: true));
+                          });
+                        },
+                        child: null,
+                        style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            backgroundColor: v,
+                            minimumSize: const Size(40, 40)),
+                      ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Okay"),
+                  ),
+                ],
+              );
+            });
       },
       child: null,
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
   }

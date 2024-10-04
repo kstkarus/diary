@@ -153,14 +153,14 @@ class _AuthWidgetState extends State<AuthWidget> {
                       arguments: {"groupID": groupID, "id": _searchingWithQuery!});
                 },
               ),
-              const SizedBox(height: 10),
-              const ElevatedButton(
-                onPressed: null,
-                // onPressed: () {
-                //   _submitPressed(prefs);
-                // },
-                child: Text("Submit"),
-              ),
+              // const SizedBox(height: 10),
+              // const ElevatedButton(
+              //   onPressed: null,
+              //   // onPressed: () {
+              //   //   _submitPressed(prefs);
+              //   // },
+              //   child: Text("Submit"),
+              // ),
               const Spacer(
                 flex: 11,
               ),
