@@ -18,9 +18,12 @@ extension HexColor on Color {
           .toUpperCase();
 }
 
-/// Construct a color from a hex code string, of the format #RRGGBB.
 extension ColorHex on String {
   Color hexToColor() {
-    return Color(int.parse(substring(1, 7), radix: 16) + 0xFF000000);
+    String hexColor = toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF$hexColor";
+    }
+    return Color(int.parse(hexColor, radix: 16));
   }
 }
