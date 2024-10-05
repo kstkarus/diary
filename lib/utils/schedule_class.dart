@@ -192,8 +192,22 @@ class _ScheduleState extends State<Schedule> {
                           //Text(data["dayDate"].trim()),
                           widget.isStaff
                               ? Text(data["group"].trim())
-                              : InkWell(
-                                  child: Text(prepodName),
+                              : data["prepodLogin"].trim().isNotEmpty
+                              ? InkWell(
+                                  child: Text(
+                                    prepodName,
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onPrimaryContainer
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    ScaffoldMessenger.of(context).clearSnackBars();
+
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                      behavior: SnackBarBehavior.floating,
+                                      content: Text("Double tap on the teacher's name to view the schedule"),
+                                    ));
+                                  },
                                   onDoubleTap: () {
                                     Navigator.pushNamed(
                                         context, "/StaffInfoPage",
@@ -202,7 +216,8 @@ class _ScheduleState extends State<Schedule> {
                                           "login": data["prepodLogin"],
                                         });
                                   },
-                                ),
+                                )
+                              : Text(prepodName),
                         ],
                       ),
                     ),

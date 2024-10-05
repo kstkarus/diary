@@ -19,11 +19,11 @@ class WelcomePage extends StatelessWidget {
             flex: 4,
           ),
           Padding(
-            padding: EdgeInsets.only(left: 30.0),
+            padding: const EdgeInsets.only(left: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Diary",
                   style: TextStyle(
                     fontSize: 64,
@@ -32,7 +32,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                   //textAlign: TextAlign.left,
                 ),
-                Text(
+                const Text(
                   "An app for viewing the schedule and more",
                   style: TextStyle(
                       fontSize: 24,

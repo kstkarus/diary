@@ -1,7 +1,7 @@
 import 'package:diary/pages/auth/welcome_widget.dart';
 import 'package:diary/utils/background_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,7 +69,7 @@ class _AuthWidgetState extends State<AuthWidget> {
             } else {
               return SafeArea(
                   child: Stack(children: [
-                const BackgroundWidget(),
+               const BackgroundWidget().animate().blur(),
                 PageView(
                   controller: controller,
                   physics: const NeverScrollableScrollPhysics(),

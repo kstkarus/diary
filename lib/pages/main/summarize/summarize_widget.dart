@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:diary/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 const List<String> weekdayName = [
@@ -33,7 +33,7 @@ class _SummarizePageState extends State<SummarizePage> {
 
       if (scheduleCurrent != null) {
         for (var info in scheduleCurrent) {
-          String prepodName = info["prepodName"].trim();
+          String prepodName = info["prepodName"].toString().trim().toTitleCase;
           String disciplName = info["disciplName"].trim();
           String disciplType = info["disciplType"].trim();
 
