@@ -1,5 +1,4 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:diary/utils/http_parser.dart';
 import 'package:diary/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,18 +40,6 @@ class SettingsPage extends StatelessWidget {
                         )
                     ),
                     SettingsButton(
-                        title: "Display in local Time",
-                        subtitle: const Text(
-                          "Shows the schedule in your local time for clarity"
-                        ),
-                        leading: const Icon(Icons.more_time_outlined),
-                        trailing: SwitchWidget(
-                            sharedPreferences: v.data!,
-                            dataKey: "groupTimeZone",
-                            defaultValue: true,
-                        ),
-                    ),
-                    SettingsButton(
                       title: "Group type",
                       subtitle: const Text(
                           "To view the schedule of a specific group only"),
@@ -61,14 +48,26 @@ class SettingsPage extends StatelessWidget {
                     ),
                     const Divider(),
                     SettingsButton(
-                      title: "Compare schedule",
-                      subtitle:
-                          const Text("Compare the schedule with other groups"),
-                      func: () {
-                        compareScreen(context);
-                      },
-                      leading: const Icon(Icons.groups_outlined),
+                      title: "Display in local Time",
+                      subtitle: const Text(
+                          "Shows the schedule in your local time for clarity"
+                      ),
+                      leading: const Icon(Icons.more_time_outlined),
+                      trailing: SwitchWidget(
+                        sharedPreferences: v.data!,
+                        dataKey: "groupTimeZone",
+                        defaultValue: true,
+                      ),
                     ),
+                    // SettingsButton(
+                    //   title: "Compare schedule",
+                    //   subtitle:
+                    //       const Text("Compare the schedule with other groups"),
+                    //   func: () {
+                    //     compareScreen(context);
+                    //   },
+                    //   leading: const Icon(Icons.groups_outlined),
+                    // ),
                     const Divider(),
                     SettingsButton(
                       title: "Log out",
@@ -115,96 +114,96 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  void compareScreen(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return const CompareWidget();
-    }));
-  }
+  // void compareScreen(BuildContext context) {
+  //   Navigator.push(context, MaterialPageRoute(builder: (context) {
+  //     return const CompareWidget();
+  //   }));
+  // }
 }
 
-class CompareWidget extends StatefulWidget {
-  const CompareWidget({
-    super.key,
-  });
-
-  @override
-  State<CompareWidget> createState() => _CompareWidgetState();
-}
-
-class _CompareWidgetState extends State<CompareWidget> {
-  String? _searchingWithQuery;
-  String? selectedGroup;
-  late Iterable<Widget> _lastOptions = <Widget>[];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Comparison"),
-        actions: [buildSearch()],
-      ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: selectedGroup != null ? buildBody() : buildHint(),
-      ),
-    );
-  }
-
-  SearchAnchor buildSearch() {
-    return SearchAnchor(builder: (context, controller) {
-      return IconButton(
-          onPressed: () {
-            controller.openView();
-          },
-          icon: const Icon(Icons.search_outlined));
-    }, suggestionsBuilder: (context, controller) async {
-      _searchingWithQuery = controller.text;
-
-      final List<dynamic> options = (await getGroups(_searchingWithQuery!));
-
-      if (_searchingWithQuery != controller.text || options.isEmpty) {
-        return _lastOptions;
-      }
-
-      _lastOptions = List<ListTile>.generate(options.length, (index) {
-        final String item = options[index]['group'];
-
-        return ListTile(
-          title: Text(item),
-          onTap: () {
-            setState(() {
-              selectedGroup = item;
-            });
-            controller.closeView(item);
-          },
-        );
-      });
-
-      return _lastOptions;
-    });
-  }
-
-  Widget buildBody() {
-    return Center(
-      key: const ValueKey(1),
-      child: CircularProgressIndicator(),
-    );
-  }
-
-  Center buildHint() {
-    return const Center(
-      key: ValueKey(2),
-      child: Text.rich(TextSpan(children: [
-        TextSpan(text: "Press "),
-        WidgetSpan(
-            child: Icon(
-          Icons.search_outlined,
-        )),
-        TextSpan(text: " to choose group")
-      ])),
-    );
-  }
-}
+// class CompareWidget extends StatefulWidget {
+//   const CompareWidget({
+//     super.key,
+//   });
+//
+//   @override
+//   State<CompareWidget> createState() => _CompareWidgetState();
+// }
+//
+// class _CompareWidgetState extends State<CompareWidget> {
+//   String? _searchingWithQuery;
+//   String? selectedGroup;
+//   late Iterable<Widget> _lastOptions = <Widget>[];
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Comparison"),
+//         actions: [buildSearch()],
+//       ),
+//       body: AnimatedSwitcher(
+//         duration: const Duration(milliseconds: 200),
+//         child: selectedGroup != null ? buildBody() : buildHint(),
+//       ),
+//     );
+//   }
+//
+//   SearchAnchor buildSearch() {
+//     return SearchAnchor(builder: (context, controller) {
+//       return IconButton(
+//           onPressed: () {
+//             controller.openView();
+//           },
+//           icon: const Icon(Icons.search_outlined));
+//     }, suggestionsBuilder: (context, controller) async {
+//       _searchingWithQuery = controller.text;
+//
+//       final List<dynamic> options = (await getGroups(_searchingWithQuery!));
+//
+//       if (_searchingWithQuery != controller.text || options.isEmpty) {
+//         return _lastOptions;
+//       }
+//
+//       _lastOptions = List<ListTile>.generate(options.length, (index) {
+//         final String item = options[index]['group'];
+//
+//         return ListTile(
+//           title: Text(item),
+//           onTap: () {
+//             setState(() {
+//               selectedGroup = item;
+//             });
+//             controller.closeView(item);
+//           },
+//         );
+//       });
+//
+//       return _lastOptions;
+//     });
+//   }
+//
+//   Widget buildBody() {
+//     return Center(
+//       key: const ValueKey(1),
+//       child: CircularProgressIndicator(),
+//     );
+//   }
+//
+//   Center buildHint() {
+//     return const Center(
+//       key: ValueKey(2),
+//       child: Text.rich(TextSpan(children: [
+//         TextSpan(text: "Press "),
+//         WidgetSpan(
+//             child: Icon(
+//           Icons.search_outlined,
+//         )),
+//         TextSpan(text: " to choose group")
+//       ])),
+//     );
+//   }
+// }
 
 class ColorAccentWidget extends StatefulWidget {
   const ColorAccentWidget({
