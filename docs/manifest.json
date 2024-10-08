@@ -3,9 +3,9 @@
     "short_name": "diary",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#FFFFFF",
+    "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Diary with your score and hometask",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

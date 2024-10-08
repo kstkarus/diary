@@ -43,7 +43,7 @@ class _MainWidgetState extends State<MainWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Diary ${arguments['id']}"),
+        title: Text("Diary ${arguments['id'] ?? ''}"),
         actions: [
           IconButton(
             onPressed: () {

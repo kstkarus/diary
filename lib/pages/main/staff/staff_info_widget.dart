@@ -22,6 +22,8 @@ class StaffInfoPage extends StatelessWidget {
             return Schedule(
               schedule: v.data!,
               isStaff: true,
+              sorting: arguments["sorting"],
+              matchTimeZone: arguments["matchTimeZone"],
             );
           }
 

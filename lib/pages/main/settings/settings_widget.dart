@@ -21,12 +21,12 @@ class SettingsPage extends StatelessWidget {
                 return Column(
                   //mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SettingsButton(
+                    SettingsButton(
                       title: "Color accent",
                       subtitle:
-                          Text("Change the colors to suit your preferences"),
-                      leading: Icon(Icons.color_lens_outlined),
-                      trailing: ColorAccentWidget(),
+                          const Text("Change the colors to suit your preferences"),
+                      leading: const Icon(Icons.color_lens_outlined),
+                      trailing: ColorAccentWidget(sharedPreferences: v.data!),
                     ),
                     const Divider(),
                     SettingsButton(
@@ -34,7 +34,24 @@ class SettingsPage extends StatelessWidget {
                         subtitle: const Text(
                             "Filtering the schedule based on date, parity, and so on"),
                         leading: const Icon(Icons.filter_alt_outlined),
-                        trailing: SwitchWidget(sharedPreferences: v.data!)),
+                        trailing: SwitchWidget(
+                            sharedPreferences: v.data!,
+                            dataKey: "groupSorting",
+                            defaultValue: true,
+                        )
+                    ),
+                    SettingsButton(
+                        title: "Display in local Time",
+                        subtitle: const Text(
+                          "Shows the schedule in your local time for clarity"
+                        ),
+                        leading: const Icon(Icons.more_time_outlined),
+                        trailing: SwitchWidget(
+                            sharedPreferences: v.data!,
+                            dataKey: "groupTimeZone",
+                            defaultValue: true,
+                        ),
+                    ),
                     SettingsButton(
                       title: "Group type",
                       subtitle: const Text(
@@ -64,22 +81,19 @@ class SettingsPage extends StatelessWidget {
                               return AlertDialog(
                                 title: const Text("Log out?"),
                                 content: const Text(
-                                    "All saved data will be deleted, including preferences"),
+                                    "The saved schedule will be deleted"),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
-                                      v.data!.clear();
                                     },
                                     child: const Text("No"),
                                   ),
                                   TextButton(
                                     onPressed: () async {
-                                      final prefs =
-                                          await SharedPreferences.getInstance();
-                                      prefs.setString("GroupID", "");
-
                                       if (context.mounted) {
+                                        await v.data!.remove("GroupID");
+
                                         Navigator.pushNamedAndRemoveUntil(
                                             context, "/AuthPage", (_) => false);
                                       }
@@ -195,7 +209,10 @@ class _CompareWidgetState extends State<CompareWidget> {
 class ColorAccentWidget extends StatefulWidget {
   const ColorAccentWidget({
     super.key,
+    required this.sharedPreferences
   });
+
+  final SharedPreferences sharedPreferences;
 
   @override
   State<ColorAccentWidget> createState() => _ColorAccentWidgetState();
@@ -237,10 +254,8 @@ class _ColorAccentWidgetState extends State<ColorAccentWidget> {
                                 fontFamily: 'NeueMachina'),
                           );
 
-                          final prefs =
-                              await SharedPreferences.getInstance();
                           setState(() {
-                            prefs.setString(
+                            widget.sharedPreferences.setString(
                                 "themeColor", v.toHex(withAlpha: true));
                           });
                         },
@@ -276,28 +291,33 @@ class SwitchWidget extends StatefulWidget {
   const SwitchWidget({
     super.key,
     required this.sharedPreferences,
+    required this.dataKey,
+    this.defaultValue = false,
   });
 
   final SharedPreferences sharedPreferences;
+  final String dataKey;
+  final bool defaultValue;
 
   @override
   State<SwitchWidget> createState() => _SwitchWidgetState();
 }
 
 class _SwitchWidgetState extends State<SwitchWidget> {
-  bool value = true;
+  late bool value;
 
   @override
   Widget build(BuildContext context) {
+    value = widget.defaultValue;
+
     return Switch(
-      value: widget.sharedPreferences.getBool("groupSorting") ?? value,
-      onChanged: (bool newValue) async {
+      value: widget.sharedPreferences.getBool(widget.dataKey) ?? value,
+      onChanged: (bool newValue) {
         setState(() {
           value = newValue;
         });
 
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setBool("groupSorting", newValue);
+        widget.sharedPreferences.setBool(widget.dataKey, newValue);
       },
     );
   }

@@ -138,8 +138,19 @@ class _AuthWidgetState extends State<AuthWidget> {
                     // },
                   );
                 },
+                emptyBuilder: (context) {
+                  return const ListTile(
+                    title: Text("Error"),
+                    subtitle: Text("Unable to get groups from server"),
+                  );
+                },
+                loadingBuilder: (context) {
+                  return const LinearProgressIndicator();
+                },
                 itemBuilder: (context, map) {
-                  return ListTile(title: Text(map['group']));
+                  return ListTile(
+                      title: Text(map['group']),
+                  );
                 },
                 onSelected: (dynamic value) {
                   //_controller.text = value['group'];

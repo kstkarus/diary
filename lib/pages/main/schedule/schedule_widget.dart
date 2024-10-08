@@ -25,6 +25,7 @@ class _SchedulePageState extends State<SchedulePage> {
             schedule: widget.schedule,
             sorting: prefs.data!.getBool("groupSorting") ?? true,
             groupType: prefs.data!.getInt("groupType") ?? 0,
+            matchTimeZone: prefs.data!.getBool("groupTimeZone") ?? true,
           );
         }
 

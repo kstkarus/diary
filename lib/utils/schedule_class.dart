@@ -10,6 +10,7 @@ class Schedule extends StatefulWidget {
   Schedule({
     super.key,
     required this.schedule,
+    this.matchTimeZone = false,
     this.sorting = true,
     this.groupType = 0,
     this.count = 14,
@@ -17,6 +18,7 @@ class Schedule extends StatefulWidget {
   });
 
   final bool sorting;
+  final bool matchTimeZone;
   final int groupType;
   final bool isStaff;
   final Map<String, dynamic> schedule;
@@ -169,11 +171,22 @@ class _ScheduleState extends State<Schedule> {
                   String rawTime = data["dayTime"].trim();
                   DateFormat hm = DateFormat("HH:mm");
                   DateTime timeStart = hm.parse(rawTime);
+
+                  if (widget.matchTimeZone) { // проверка на часовой пояс
+                    int timeZoneDifference = timeStart.timeZoneOffset.inHours - 3;
+
+                    timeStart = timeStart.add(
+                        Duration(hours: timeZoneDifference));
+                  }
+
                   DateTime timeEnd =
                       timeStart.add(const Duration(hours: 1, minutes: 30));
+
+                  String rawStart = hm.format(timeStart);
                   String rawEnd = hm.format(timeEnd);
 
-                  String prepodName = data["prepodName"].toString().trim().toTitleCase;
+                  String prepodName =
+                      data["prepodName"].toString().trim().toTitleCase;
 
                   return Card(
                     child: ListTile(
@@ -184,7 +197,7 @@ class _ScheduleState extends State<Schedule> {
                       subtitle: Wrap(
                         spacing: 10,
                         children: [
-                          Text("$rawTime - $rawEnd"),
+                          Text("$rawStart - $rawEnd"),
                           Text(data['buildNum'].trim()),
                           Text(data["audNum"].trim()),
                           Text(data["disciplType"].trim()),
@@ -193,31 +206,37 @@ class _ScheduleState extends State<Schedule> {
                           widget.isStaff
                               ? Text(data["group"].trim())
                               : data["prepodLogin"].trim().isNotEmpty
-                              ? InkWell(
-                                  child: Text(
-                                    prepodName,
-                                    style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onPrimaryContainer
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    ScaffoldMessenger.of(context).clearSnackBars();
+                                  ? InkWell(
+                                      child: Text(
+                                        prepodName,
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryContainer),
+                                      ),
+                                      onTap: () {
+                                        ScaffoldMessenger.of(context)
+                                            .clearSnackBars();
 
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                      behavior: SnackBarBehavior.floating,
-                                      content: Text("Double tap on the teacher's name to view the schedule"),
-                                    ));
-                                  },
-                                  onDoubleTap: () {
-                                    Navigator.pushNamed(
-                                        context, "/StaffInfoPage",
-                                        arguments: {
-                                          "name": prepodName,
-                                          "login": data["prepodLogin"],
-                                        });
-                                  },
-                                )
-                              : Text(prepodName),
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          content: Text(
+                                              "Double tap on the teacher's name to view the schedule"),
+                                        ));
+                                      },
+                                      onDoubleTap: () {
+                                        Navigator.pushNamed(
+                                            context, "/StaffInfoPage",
+                                            arguments: {
+                                              "name": prepodName,
+                                              "login": data["prepodLogin"],
+                                              "sorting": widget.sorting,
+                                              "matchTimeZone": widget.matchTimeZone,
+                                            });
+                                      },
+                                    )
+                                  : Text(prepodName),
                         ],
                       ),
                     ),
@@ -289,7 +308,8 @@ class _ScheduleState extends State<Schedule> {
       initialSelectedDate: widget.from,
       onDateChange: (selectedDate) {
         setState(() {
-          _pageController.jumpToPage(selectedDate.ordinalDate - widget.from.ordinalDate);
+          _pageController
+              .jumpToPage(selectedDate.ordinalDate - widget.from.ordinalDate);
           // _pageController.animateToPage(
           //     selectedDate.ordinalDate - widget.from.ordinalDate,
           //     duration: const Duration(
