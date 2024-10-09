@@ -22,10 +22,18 @@ class SettingsPage extends StatelessWidget {
                   //mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SettingsButton(
+                      title: "App theme",
+                      subtitle: const Text("Just tap here to change theme of app"),
+                      leading: const ThemeDisplay(),
+                      func: () {
+                        AdaptiveTheme.of(context).toggleThemeMode();
+                      },
+                    ),
+                    SettingsButton(
                       title: "Color accent",
-                      subtitle:
-                          const Text("Change the colors to suit your preferences"),
-                      leading: const Icon(Icons.color_lens_outlined),
+                      subtitle: const Text(
+                          "Change the colors to suit your preferences"),
+                      leading: const Icon(Icons.colorize_outlined),
                       trailing: ColorAccentWidget(sharedPreferences: v.data!),
                     ),
                     const Divider(),
@@ -35,11 +43,10 @@ class SettingsPage extends StatelessWidget {
                             "Filtering the schedule based on date, parity, and so on"),
                         leading: const Icon(Icons.filter_alt_outlined),
                         trailing: SwitchWidget(
-                            sharedPreferences: v.data!,
-                            dataKey: "groupSorting",
-                            defaultValue: true,
-                        )
-                    ),
+                          sharedPreferences: v.data!,
+                          dataKey: "groupSorting",
+                          defaultValue: true,
+                        )),
                     SettingsButton(
                       title: "Group type",
                       subtitle: const Text(
@@ -51,8 +58,7 @@ class SettingsPage extends StatelessWidget {
                     SettingsButton(
                       title: "Display in local Time",
                       subtitle: const Text(
-                          "Shows the schedule in your local time for clarity"
-                      ),
+                          "Shows the schedule in your local time for clarity"),
                       leading: const Icon(Icons.more_time_outlined),
                       trailing: SwitchWidget(
                         sharedPreferences: v.data!,
@@ -63,63 +69,59 @@ class SettingsPage extends StatelessWidget {
                     const Divider(),
                     SettingsButton(
                       title: "Teacher's schedule",
-                      subtitle:
-                          const Text("View the schedule of any teacher"),
+                      subtitle: const Text("View the schedule of any teacher"),
                       func: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) {
-                              return const StaffPage();
-                            },
-                            settings: RouteSettings(
-                              arguments: {
+                              builder: (context) {
+                                return const StaffPage();
+                              },
+                              settings: RouteSettings(arguments: {
                                 'sorting': v.data!.getBool('groupSorting'),
-                                'matchTimeZone': v.data!.getBool('groupTimeZone')
-                              }
-                            )
-                          ),
-
+                                'matchTimeZone':
+                                    v.data!.getBool('groupTimeZone')
+                              })),
                         );
                       },
                       leading: const Icon(Icons.groups_outlined),
                     ),
-                    const Divider(),
-                    SettingsButton(
-                      title: "Log out",
-                      leading: const Icon(Icons.logout_outlined),
-                      func: () async {
-                        showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text("Log out?"),
-                                content: const Text(
-                                    "The saved schedule will be deleted"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("No"),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      if (context.mounted) {
-                                        await v.data!.remove("GroupID");
-
-                                        Navigator.pushNamedAndRemoveUntil(
-                                            context, "/AuthPage", (_) => false);
-                                      }
-                                    },
-                                    child: const Text("Yes"),
-                                  ),
-                                ],
-                              );
-                            });
-                      },
-                    ),
+                    //const Divider(),
+                    // SettingsButton(
+                    //   title: "Log out",
+                    //   leading: const Icon(Icons.logout_outlined),
+                    //   func: () async {
+                    //     showDialog(
+                    //         context: context,
+                    //         barrierDismissible: false,
+                    //         builder: (context) {
+                    //           return AlertDialog(
+                    //             title: const Text("Log out?"),
+                    //             content: const Text(
+                    //                 "The saved schedule will be deleted"),
+                    //             actions: [
+                    //               TextButton(
+                    //                 onPressed: () {
+                    //                   Navigator.pop(context);
+                    //                 },
+                    //                 child: const Text("No"),
+                    //               ),
+                    //               TextButton(
+                    //                 onPressed: () async {
+                    //                   if (context.mounted) {
+                    //                     await v.data!.remove("GroupID");
+                    //
+                    //                     Navigator.pushNamedAndRemoveUntil(
+                    //                         context, "/AuthPage", (_) => false);
+                    //                   }
+                    //                 },
+                    //                 child: const Text("Yes"),
+                    //               ),
+                    //             ],
+                    //           );
+                    //         });
+                    //   },
+                    // ),
                   ],
                 );
               }
@@ -222,10 +224,7 @@ class SettingsPage extends StatelessWidget {
 // }
 
 class ColorAccentWidget extends StatefulWidget {
-  const ColorAccentWidget({
-    super.key,
-    required this.sharedPreferences
-  });
+  const ColorAccentWidget({super.key, required this.sharedPreferences});
 
   final SharedPreferences sharedPreferences;
 
@@ -367,6 +366,37 @@ class _SettingsButtonState extends State<SettingsButton> {
             }
           : null,
     );
+  }
+}
+
+class ThemeDisplay extends StatefulWidget {
+  const ThemeDisplay({super.key});
+
+  @override
+  State<ThemeDisplay> createState() => _ThemeDisplayState();
+}
+
+class _ThemeDisplayState extends State<ThemeDisplay> {
+  @override
+  Widget build(BuildContext context) {
+    switch (AdaptiveTheme.of(context).mode) {
+      case AdaptiveThemeMode.light:
+        {
+          return const Icon(Icons.light_mode_outlined);
+        }
+      case AdaptiveThemeMode.dark:
+        {
+          return const Icon(Icons.dark_mode_outlined);
+        }
+      case AdaptiveThemeMode.system:
+        {
+          return const Icon(Icons.brightness_auto_outlined);
+        }
+      default:
+        {
+          return const Icon(Icons.error_outline);
+        }
+    }
   }
 }
 

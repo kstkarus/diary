@@ -48,7 +48,6 @@ class MyApp extends StatelessWidget {
       ),
       builder: (theme, darkTheme) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Diary',
         theme: theme,
         darkTheme: darkTheme,
         initialRoute: "/AuthPage",

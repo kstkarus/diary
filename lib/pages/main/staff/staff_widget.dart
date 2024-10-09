@@ -16,7 +16,6 @@ class _StaffPageState extends State<StaffPage> {
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
-    print(arguments);
 
     return Scaffold(
       appBar: AppBar(

@@ -37,7 +37,7 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        buildGroupNum(),
+        //buildGroupNum(),
         buildEasyDateTimeLine(context),
         Expanded(
           child: PageView(
@@ -58,16 +58,16 @@ class _ScheduleState extends State<Schedule> {
     );
   }
 
-  Widget buildGroupNum() {
-    switch (widget.groupType) {
-      case 1:
-        return const Text("первая подгруппа");
-      case 2:
-        return const Text("вторая подгруппа");
-      default:
-        return const SizedBox.shrink();
-    }
-  }
+  // Widget buildGroupNum() {
+  //   switch (widget.groupType) {
+  //     case 1:
+  //       return const Text("первая подгруппа");
+  //     case 2:
+  //       return const Text("вторая подгруппа");
+  //     default:
+  //       return const SizedBox.shrink();
+  //   }
+  // }
 
   (bool, String) isShouldDisplay(String type, DateTime date, int groupType) {
     bool parity = date.weekNumber % 2 == 0;

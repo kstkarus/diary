@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/http_parser.dart';
 import 'schedule/schedule_widget.dart';
 import '../../utils/http_parser.dart' as http_manager;
 import 'exams/exams_widget.dart';
@@ -15,27 +16,6 @@ class MainWidget extends StatefulWidget {
 class _MainWidgetState extends State<MainWidget> {
   int _currentPageIndex = 0;
 
-  Icon getThemeIcon(BuildContext context) {
-    switch (AdaptiveTheme.of(context).mode) {
-      case AdaptiveThemeMode.light:
-        {
-          return const Icon(Icons.light_mode_outlined);
-        }
-      case AdaptiveThemeMode.dark:
-        {
-          return const Icon(Icons.dark_mode_outlined);
-        }
-      case AdaptiveThemeMode.system:
-        {
-          return const Icon(Icons.brightness_auto_outlined);
-        }
-      default:
-        {
-          return const Icon(Icons.error_outline);
-        }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
@@ -43,7 +23,9 @@ class _MainWidgetState extends State<MainWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Diary ${arguments['id'] ?? ''}"),
+        leading: const GroupHandler(),
+        title: Text('Diary'),
+        centerTitle: true,
         actions: [
           IconButton(
             onPressed: () {
@@ -51,12 +33,12 @@ class _MainWidgetState extends State<MainWidget> {
             },
             icon: const Icon(Icons.settings),
           ),
-          IconButton(
-            onPressed: () {
-              AdaptiveTheme.of(context).toggleThemeMode();
-            },
-            icon: getThemeIcon(context),
-          ),
+          // IconButton(
+          //   onPressed: () {
+          //     AdaptiveTheme.of(context).toggleThemeMode();
+          //   },
+          //   icon: getThemeIcon(context),
+          // ),
         ],
       ),
       body: FutureBuilder(
@@ -64,14 +46,13 @@ class _MainWidgetState extends State<MainWidget> {
           builder: (context, v) {
             if (v.hasData) {
               return FadeIndexedStack(
-                duration: const Duration(milliseconds: 200),
-                index: _currentPageIndex,
-                children: [
-                  SchedulePage(schedule: v.data!),
-                  const ExamsPage(),
-                  SummarizePage(schedule: v.data!),
-                ]
-              );
+                  duration: const Duration(milliseconds: 200),
+                  index: _currentPageIndex,
+                  children: [
+                    SchedulePage(schedule: v.data!),
+                    const ExamsPage(),
+                    SummarizePage(schedule: v.data!),
+                  ]);
             }
 
             return const LinearProgressIndicator();
@@ -108,35 +89,35 @@ class _MainWidgetState extends State<MainWidget> {
     );
   }
 
-  Future<void> _dialogBuilder(BuildContext context, String defaultValue) {
-    TextEditingController controller = TextEditingController(
-      text: defaultValue,
-    );
-
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Edit content'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: "Group",
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Submit'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Future<void> _dialogBuilder(BuildContext context, String defaultValue) {
+  //   TextEditingController controller = TextEditingController(
+  //     text: defaultValue,
+  //   );
+  //
+  //   return showDialog<void>(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Edit content'),
+  //         content: TextField(
+  //           controller: controller,
+  //           decoration: const InputDecoration(
+  //             border: OutlineInputBorder(),
+  //             labelText: "Group",
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('Submit'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 }
 
 class FadeIndexedStack extends StatefulWidget {
@@ -188,6 +169,64 @@ class _FadeIndexedStackState extends State<FadeIndexedStack>
         index: widget.index,
         children: widget.children,
       ),
+    );
+  }
+}
+
+class GroupHandler extends StatefulWidget {
+  const GroupHandler({super.key});
+
+  @override
+  State<GroupHandler> createState() => _GroupHandlerState();
+}
+
+class _GroupHandlerState extends State<GroupHandler> {
+  String? _searchingWithQuery;
+  late List<Widget> _lastOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    return SearchAnchor(
+      builder: (context, controller) {
+        return IconButton(
+          onPressed: () {
+            controller.openView();
+          },
+          icon: Icon(Icons.search),
+        );
+      },
+      suggestionsBuilder: (context, controller) async {
+        _searchingWithQuery = controller.text;
+
+        final List<dynamic> options = (await getGroups(_searchingWithQuery!));
+
+        if (_searchingWithQuery != controller.text || options.isEmpty) {
+          return _lastOptions;
+        }
+
+        _lastOptions = List<ListTile>.generate(options.length, (index) {
+          final String item = options[index]['group'];
+
+          return ListTile(
+            title: Text(item),
+            onTap: () async {
+              var prefs = await SharedPreferences.getInstance();
+              String groupID = options[index]['id'].toString();
+
+              await prefs.setString("GroupID", groupID);
+              await prefs.setString("id", item);
+
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, "/MainPage", (_) => false,
+                    arguments: {"groupID": groupID, "id": item});
+              }
+            },
+          );
+        });
+
+        return _lastOptions;
+      },
     );
   }
 }
