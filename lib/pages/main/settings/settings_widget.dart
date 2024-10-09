@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:diary/pages/main/staff/staff_widget.dart';
 import 'package:diary/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,15 +60,30 @@ class SettingsPage extends StatelessWidget {
                         defaultValue: true,
                       ),
                     ),
-                    // SettingsButton(
-                    //   title: "Compare schedule",
-                    //   subtitle:
-                    //       const Text("Compare the schedule with other groups"),
-                    //   func: () {
-                    //     compareScreen(context);
-                    //   },
-                    //   leading: const Icon(Icons.groups_outlined),
-                    // ),
+                    const Divider(),
+                    SettingsButton(
+                      title: "Teacher's schedule",
+                      subtitle:
+                          const Text("View the schedule of any teacher"),
+                      func: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return const StaffPage();
+                            },
+                            settings: RouteSettings(
+                              arguments: {
+                                'sorting': v.data!.getBool('groupSorting'),
+                                'matchTimeZone': v.data!.getBool('groupTimeZone')
+                              }
+                            )
+                          ),
+
+                        );
+                      },
+                      leading: const Icon(Icons.groups_outlined),
+                    ),
                     const Divider(),
                     SettingsButton(
                       title: "Log out",
@@ -222,11 +238,6 @@ class _ColorAccentWidgetState extends State<ColorAccentWidget> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        //   behavior: SnackBarBehavior.floating,
-        //   content: Text("Will be implemented in future updates."),
-        // ));
-
         showDialog(
             context: context,
             barrierDismissible: false,

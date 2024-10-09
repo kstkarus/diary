@@ -185,7 +185,7 @@ class _AuthWidgetState extends State<AuthWidget> {
                 child: Text(
                   "github.com/kstkarus/diary",
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),

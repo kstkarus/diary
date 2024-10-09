@@ -300,11 +300,11 @@ class _ScheduleState extends State<Schedule> {
       todayColor: Theme.of(context).colorScheme.tertiaryContainer,
       todayTextColor: Theme.of(context).colorScheme.onTertiaryContainer,
       dateTextStyle: defaultDateTextStyle.apply(
-          color: Theme.of(context).colorScheme.onBackground),
+          color: Theme.of(context).colorScheme.onSurface),
       dayTextStyle: defaultDayTextStyle.apply(
-          color: Theme.of(context).colorScheme.onBackground),
+          color: Theme.of(context).colorScheme.onSurface),
       monthTextStyle: defaultMonthTextStyle.apply(
-          color: Theme.of(context).colorScheme.onBackground),
+          color: Theme.of(context).colorScheme.onSurface),
       initialSelectedDate: widget.from,
       onDateChange: (selectedDate) {
         setState(() {
