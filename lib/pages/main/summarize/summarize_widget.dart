@@ -27,6 +27,7 @@ class _SummarizePageState extends State<SummarizePage> {
   @override
   Widget build(BuildContext context) {
     Map<String, Set<String>> nameOfLessons = {};
+    Map<String, Set<String>> typeOfLessons = {};
 
     for (int i = 1; i < 7; i++) {
       var scheduleCurrent = widget.schedule[i.toString()];
@@ -38,9 +39,15 @@ class _SummarizePageState extends State<SummarizePage> {
           String disciplType = info["disciplType"].trim();
 
           if (nameOfLessons.containsKey(prepodName)) {
-            nameOfLessons[prepodName]!.add("$disciplName $disciplType");
+            nameOfLessons[prepodName]!.add(disciplName);
           } else {
-            nameOfLessons[prepodName] = <String>{"$disciplName $disciplType"};
+            nameOfLessons[prepodName] = <String>{disciplName};
+          }
+
+          if (typeOfLessons.containsKey(prepodName)) {
+            typeOfLessons[prepodName]!.add(disciplType);
+          } else {
+            typeOfLessons[prepodName] = <String>{disciplType};
           }
         }
       }
@@ -54,12 +61,19 @@ class _SummarizePageState extends State<SummarizePage> {
         itemBuilder: (c, i) {
           String key = nameOfLessons.keys.elementAt(i);
           String value = nameOfLessons[key].toString();
+          Set<String> value2 = typeOfLessons[key]!;
 
           return Card(
               child: ListTile(
+                  trailing: Text(
+                    value2.join("\n"),
+                    textAlign: TextAlign.center,
+                  ),
                   title: Text(key),
                   subtitle: Text(value.substring(1, value.length - 1)),
-                  trailing: const Icon(Icons.person)));
+                  //leading: const Icon(Icons.person)
+              )
+          );
         },
       ),
     );

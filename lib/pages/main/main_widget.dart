@@ -16,76 +16,77 @@ class MainWidget extends StatefulWidget {
 class _MainWidgetState extends State<MainWidget> {
   int _currentPageIndex = 0;
 
+  void onDestChange(int idx) {
+    setState(() {
+      _currentPageIndex = idx;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
         <String, dynamic>{}) as Map;
+    final useSideNavRail = MediaQuery.sizeOf(context).width >= 600;
 
     return Scaffold(
       appBar: AppBar(
-        leading: const GroupHandler(),
+        leading: useSideNavRail ? null : const GroupHandler(),
         title: Text('Diary'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, "/SettingsPage");
-            },
-            icon: const Icon(Icons.settings),
+        centerTitle: !useSideNavRail,
+        actions: useSideNavRail
+            ? null : [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/SettingsPage");
+                  },
+                  icon: const Icon(Icons.settings),
+                ),
+                // IconButton(
+                //   onPressed: () {
+                //     AdaptiveTheme.of(context).toggleThemeMode();
+                //   },
+                //   icon: getThemeIcon(context),
+                // ),
+              ],
+      ),
+      body: Row(
+        children: [
+          if (useSideNavRail)
+            SideNavRail(
+              selectedIndex: _currentPageIndex,
+              onDestSelected: onDestChange,
+              leading: const GroupHandler(),
+              trailing: IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/SettingsPage");
+                },
+                icon: const Icon(Icons.settings),
+              ),
+            ),
+          Expanded(
+            child: FutureBuilder(
+                future: http_manager.getSchedule(arguments["groupID"]),
+                builder: (context, v) {
+                  if (v.hasData) {
+                    return FadeIndexedStack(
+                        duration: const Duration(milliseconds: 200),
+                        index: _currentPageIndex,
+                        children: [
+                          SchedulePage(schedule: v.data!),
+                          const ExamsPage(),
+                          SummarizePage(schedule: v.data!),
+                        ]);
+                  }
+
+                  return const LinearProgressIndicator();
+                }),
           ),
-          // IconButton(
-          //   onPressed: () {
-          //     AdaptiveTheme.of(context).toggleThemeMode();
-          //   },
-          //   icon: getThemeIcon(context),
-          // ),
         ],
       ),
-      body: FutureBuilder(
-          future: http_manager.getSchedule(arguments["groupID"]),
-          builder: (context, v) {
-            if (v.hasData) {
-              return FadeIndexedStack(
-                  duration: const Duration(milliseconds: 200),
-                  index: _currentPageIndex,
-                  children: [
-                    SchedulePage(schedule: v.data!),
-                    const ExamsPage(),
-                    SummarizePage(schedule: v.data!),
-                  ]);
-            }
-
-            return const LinearProgressIndicator();
-          }),
-      bottomNavigationBar: buildNavigationBar(),
-    );
-  }
-
-  NavigationBar buildNavigationBar() {
-    return NavigationBar(
-      selectedIndex: _currentPageIndex,
-      onDestinationSelected: (int index) {
-        setState(() {
-          _currentPageIndex = index;
-        });
-      },
-      destinations: const [
-        NavigationDestination(
-          selectedIcon: Icon(Icons.schedule),
-          icon: Icon(Icons.schedule_outlined),
-          label: "Schedule",
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.book),
-          icon: Icon(Icons.book_outlined),
-          label: "Exams",
-        ),
-        NavigationDestination(
-          selectedIcon: Icon(Icons.summarize),
-          icon: Icon(Icons.summarize_outlined),
-          label: "Summarize",
-        ),
-      ],
+      bottomNavigationBar: useSideNavRail
+          ? null
+          : BottomNavBar(
+              selectedIndex: _currentPageIndex, onDestSelected: onDestChange),
     );
   }
 
@@ -118,6 +119,67 @@ class _MainWidgetState extends State<MainWidget> {
   //     },
   //   );
   // }
+}
+
+class Destination {
+  const Destination(this.icon, this.label, this.selectedIcon);
+  final Icon icon;
+  final String label;
+  final Icon selectedIcon;
+}
+
+const List<Destination> destinations = [
+  Destination(Icon(Icons.schedule_outlined), 'Schedule', Icon(Icons.schedule)),
+  Destination(Icon(Icons.book_outlined), 'Exams', Icon(Icons.book)),
+  Destination(Icon(Icons.summarize_outlined), 'Summarize', Icon(Icons.summarize)),
+];
+
+class BottomNavBar extends StatelessWidget {
+  const BottomNavBar(
+      {super.key, required this.selectedIndex, this.onDestSelected});
+
+  final int selectedIndex;
+  final ValueChanged<int>? onDestSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return NavigationBar(
+      selectedIndex: selectedIndex,
+      onDestinationSelected: onDestSelected,
+      destinations: destinations.map((dest) {
+        return NavigationDestination(icon: dest.icon, label: dest.label, selectedIcon: dest.selectedIcon);
+      }).toList(),
+    );
+  }
+}
+
+class SideNavRail extends StatelessWidget {
+  const SideNavRail(
+      {super.key,
+      required this.selectedIndex,
+      this.onDestSelected,
+      this.leading,
+      this.trailing});
+
+  final int selectedIndex;
+  final ValueChanged<int>? onDestSelected;
+  final Widget? leading;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return NavigationRail(
+      selectedIndex: selectedIndex,
+      onDestinationSelected: onDestSelected,
+      labelType: NavigationRailLabelType.all,
+      leading: leading,
+      trailing: trailing,
+      destinations: destinations.map((dest) {
+        return NavigationRailDestination(
+            icon: dest.icon, label: Text(dest.label), selectedIcon: dest.selectedIcon);
+      }).toList(),
+    );
+  }
 }
 
 class FadeIndexedStack extends StatefulWidget {
@@ -192,7 +254,7 @@ class _GroupHandlerState extends State<GroupHandler> {
           onPressed: () {
             controller.openView();
           },
-          icon: Icon(Icons.search),
+          icon: Icon(Icons.edit),
         );
       },
       suggestionsBuilder: (context, controller) async {

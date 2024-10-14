@@ -212,7 +212,7 @@ class _ScheduleState extends State<Schedule> {
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimaryContainer),
+                                                .primary),
                                       ),
                                       onTap: () {
                                         ScaffoldMessenger.of(context)
@@ -222,10 +222,10 @@ class _ScheduleState extends State<Schedule> {
                                             .showSnackBar(const SnackBar(
                                           behavior: SnackBarBehavior.floating,
                                           content: Text(
-                                              "Double tap on the teacher's name to view the schedule"),
+                                              "Long press on the teacher's name to view the schedule"),
                                         ));
                                       },
-                                      onDoubleTap: () {
+                                      onLongPress: () {
                                         Navigator.pushNamed(
                                             context, "/StaffInfoPage",
                                             arguments: {
