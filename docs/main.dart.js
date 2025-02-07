@@ -27930,7 +27930,7 @@ a2B(a){var s=0,r=A.S(t.j),q,p=2,o,n,m,l,k,j,i,h
 var $async$a2B=A.O(function(b,c){if(b===1){o=c
 s=p}while(true)switch(s){case 0:k=A.f7("https://api.pocket-kai.ru/group/suggest?group_name="+a,0,null)
 j=t.N
-i=A.ax(["content-type","application/json; charset=UTF-8"],j,j)
+i=A.ax(["Content-Type","text/plain"],j,j)
 p=4
 s=7
 return A.Z(A.aNb(k,i).BZ(0,B.pQ),$async$a2B)
@@ -28016,7 +28016,7 @@ tv(a){var s=0,r=A.S(t.a),q,p=2,o,n,m,l,k,j,i,h,g,f,e,d,c
 var $async$tv=A.O(function(b,a0){if(b===1){o=a0
 s=p}while(true)switch(s){case 0:h=A.f7("https://api.pocket-kai.ru/group/by_name/"+a+"/schedule/week",0,null)
 g=t.N
-f=A.ax(["content-type","application/json; charset=UTF-8"],g,g)
+f=A.ax(["Content-Type","text/plain"],g,g)
 p=4
 s=7
 return A.Z(A.aNb(h,f).BZ(0,B.hU),$async$tv)

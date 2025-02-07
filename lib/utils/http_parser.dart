@@ -7,7 +7,7 @@ Future<List<dynamic>> getGroups(String group) async {
   final url = Uri.parse("https://api.pocket-kai.ru/group/suggest?group_name=$group");
 
   final headers = {
-    'content-type': 'application/json; charset=UTF-8',
+    'Content-Type': 'text/plain'
   };
 
   try {
@@ -139,7 +139,7 @@ Future<Map<String, dynamic>> getSchedule(String groupID) async {
   // };
 
   final headers = {
-    'content-type': 'application/json; charset=UTF-8'
+    'Content-Type': 'text/plain'
   };
 
   try {
