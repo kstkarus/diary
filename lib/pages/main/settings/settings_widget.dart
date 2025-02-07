@@ -78,9 +78,9 @@ class SettingsPage extends StatelessWidget {
                                 return const StaffPage();
                               },
                               settings: RouteSettings(arguments: {
-                                'sorting': v.data!.getBool('groupSorting'),
+                                'sorting': v.data!.getBool('groupSorting') ?? true,
                                 'matchTimeZone':
-                                    v.data!.getBool('groupTimeZone')
+                                    v.data!.getBool('groupTimeZone') ?? true
                               })),
                         );
                       },
@@ -138,90 +138,6 @@ class SettingsPage extends StatelessWidget {
   //   }));
   // }
 }
-
-// class CompareWidget extends StatefulWidget {
-//   const CompareWidget({
-//     super.key,
-//   });
-//
-//   @override
-//   State<CompareWidget> createState() => _CompareWidgetState();
-// }
-//
-// class _CompareWidgetState extends State<CompareWidget> {
-//   String? _searchingWithQuery;
-//   String? selectedGroup;
-//   late Iterable<Widget> _lastOptions = <Widget>[];
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Comparison"),
-//         actions: [buildSearch()],
-//       ),
-//       body: AnimatedSwitcher(
-//         duration: const Duration(milliseconds: 200),
-//         child: selectedGroup != null ? buildBody() : buildHint(),
-//       ),
-//     );
-//   }
-//
-//   SearchAnchor buildSearch() {
-//     return SearchAnchor(builder: (context, controller) {
-//       return IconButton(
-//           onPressed: () {
-//             controller.openView();
-//           },
-//           icon: const Icon(Icons.search_outlined));
-//     }, suggestionsBuilder: (context, controller) async {
-//       _searchingWithQuery = controller.text;
-//
-//       final List<dynamic> options = (await getGroups(_searchingWithQuery!));
-//
-//       if (_searchingWithQuery != controller.text || options.isEmpty) {
-//         return _lastOptions;
-//       }
-//
-//       _lastOptions = List<ListTile>.generate(options.length, (index) {
-//         final String item = options[index]['group'];
-//
-//         return ListTile(
-//           title: Text(item),
-//           onTap: () {
-//             setState(() {
-//               selectedGroup = item;
-//             });
-//             controller.closeView(item);
-//           },
-//         );
-//       });
-//
-//       return _lastOptions;
-//     });
-//   }
-//
-//   Widget buildBody() {
-//     return Center(
-//       key: const ValueKey(1),
-//       child: CircularProgressIndicator(),
-//     );
-//   }
-//
-//   Center buildHint() {
-//     return const Center(
-//       key: ValueKey(2),
-//       child: Text.rich(TextSpan(children: [
-//         TextSpan(text: "Press "),
-//         WidgetSpan(
-//             child: Icon(
-//           Icons.search_outlined,
-//         )),
-//         TextSpan(text: " to choose group")
-//       ])),
-//     );
-//   }
-// }
 
 class ColorAccentWidget extends StatefulWidget {
   const ColorAccentWidget({super.key, required this.sharedPreferences});

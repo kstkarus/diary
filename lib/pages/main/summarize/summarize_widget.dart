@@ -29,14 +29,19 @@ class _SummarizePageState extends State<SummarizePage> {
     Map<String, Set<String>> nameOfLessons = {};
     Map<String, Set<String>> typeOfLessons = {};
 
-    for (int i = 1; i < 7; i++) {
-      var scheduleCurrent = widget.schedule[i.toString()];
+    var schedule = (widget.schedule['week_days'] as Map<String, dynamic>).values;
+
+    for (int i = 0; i < 7; i++) {
+      var scheduleCurrent = schedule.elementAt(i);
 
       if (scheduleCurrent != null) {
         for (var info in scheduleCurrent) {
-          String prepodName = info["prepodName"].toString().trim().toTitleCase;
-          String disciplName = info["disciplName"].trim();
-          String disciplType = info["disciplType"].trim();
+          Map<String, dynamic> prepod = info['teacher'] ?? {'name': 'Empty', 'login': ''};
+          String prepodName = prepod["name"];
+
+          Map<String, dynamic> discipline = info['discipline'];
+          String disciplName = discipline["name"];
+          String disciplType = info["original_lesson_type"];
 
           if (nameOfLessons.containsKey(prepodName)) {
             nameOfLessons[prepodName]!.add(disciplName);

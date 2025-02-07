@@ -51,7 +51,7 @@ class _ScheduleState extends State<Schedule> {
               });
             },
             controller: _pageController,
-            children: buildSchedulePages(widget.schedule).animate().fadeIn(),
+            children: buildSchedulePages().animate().fadeIn(),
           ),
         ),
       ],
@@ -74,6 +74,10 @@ class _ScheduleState extends State<Schedule> {
     const String templateFirst = "1 группа";
     const String templateSecond = "2 группа";
     // 0 - не выбрана; 1 - первая; 2 - вторая
+
+    if (type.isNotEmpty) {
+      type = type.replaceAll(' ', '');
+    }
 
     switch (type) {
       case "":
@@ -140,14 +144,19 @@ class _ScheduleState extends State<Schedule> {
     return (false, type);
   }
 
-  List<Widget> buildSchedulePages(Map<String, dynamic> schedule) {
+  List<Widget> buildSchedulePages() {
     List<Widget> buffer = [];
+
+    var rawSchedule = /*widget.isStaff ? widget.schedule :*/ widget.schedule['week_days'];
+    var schedule = (rawSchedule as Map<String, dynamic>).values;
 
     for (int i = 0; i < widget.count; i++) {
       DateTime dayCurrent = widget.from.add(Duration(days: i));
-      var scheduleCurrent = schedule[dayCurrent.weekday.toString()];
+      int currentWeekday = dayCurrent.weekday;
+      //var teacherSchedule = schedule.firstWhere((v) => v['number_of_day'] == currentWeekday);
+      var scheduleCurrent = /*widget.isStaff ? teacherSchedule :*/ schedule.elementAt(currentWeekday - 1);
 
-      if (scheduleCurrent != null) {
+      if (scheduleCurrent != null && scheduleCurrent.isNotEmpty) {
         int countOfLessons = 0;
 
         buffer.add(LayoutBuilder(builder: (context, c) {
@@ -157,18 +166,20 @@ class _ScheduleState extends State<Schedule> {
               itemBuilder: (context, j) {
                 var data = scheduleCurrent[j];
 
+                String originalDates = data["original_dates"] ?? '';
+
                 (bool, String) shouldDiplay = widget.sorting
                     ? isShouldDisplay(
-                        data["dayDate"]!.trim(),
+                        originalDates,
                         dayCurrent,
                         widget.groupType,
                       )
-                    : (true, data["dayDate"]!.trim());
+                    : (true, originalDates);
 
                 if (shouldDiplay.$1) {
                   countOfLessons++;
 
-                  String rawTime = data["dayTime"].trim();
+                  String rawTime = data["start_time"];
                   DateFormat hm = DateFormat("HH:mm");
                   DateTime timeStart = hm.parse(rawTime);
 
@@ -185,27 +196,29 @@ class _ScheduleState extends State<Schedule> {
                   String rawStart = hm.format(timeStart);
                   String rawEnd = hm.format(timeEnd);
 
+                  Map<String, dynamic> prepod = data['teacher'] ?? {'name': '', 'login': ''};
                   String prepodName =
-                      data["prepodName"].toString().trim().toTitleCase;
+                      prepod["name"];
+
+                  Map<String, dynamic> discipline = data['discipline'];
 
                   return Card(
                     child: ListTile(
-                      title: Text(data["disciplName"]!.trim(),
+                      title: Text(discipline["name"],
                           style: TextStyle(
-                            decoration: isPassed(dayCurrent, timeEnd),
+                            //decoration: isPassed(dayCurrent, timeEnd),
                           )),
                       subtitle: Wrap(
                         spacing: 10,
                         children: [
                           Text("$rawStart - $rawEnd"),
-                          Text(data['buildNum'].trim()),
-                          Text(data["audNum"].trim()),
-                          Text(data["disciplType"].trim()),
-                          Text(shouldDiplay.$2.trim()),
-                          //Text(data["dayDate"].trim()),
+                          Text(data['building_number']),
+                          Text(data["audience_number"]),
+                          Text(data['original_lesson_type']),
+                          Text(shouldDiplay.$2),
                           widget.isStaff
-                              ? Text(data["group"].trim())
-                              : data["prepodLogin"].trim().isNotEmpty
+                              ? Text(discipline["group"])
+                              : prepod["login"].toString().isNotEmpty
                                   ? InkWell(
                                       child: Text(
                                         prepodName,
@@ -230,7 +243,7 @@ class _ScheduleState extends State<Schedule> {
                                             context, "/StaffInfoPage",
                                             arguments: {
                                               "name": prepodName,
-                                              "login": data["prepodLogin"],
+                                              "login": prepod["login"],
                                               "sorting": widget.sorting,
                                               "matchTimeZone": widget.matchTimeZone,
                                             });

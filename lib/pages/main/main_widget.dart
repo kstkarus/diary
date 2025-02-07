@@ -1,3 +1,4 @@
+import 'package:diary/pages/main/summarize/compare_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/http_parser.dart';
@@ -65,7 +66,7 @@ class _MainWidgetState extends State<MainWidget> {
             ),
           Expanded(
             child: FutureBuilder(
-                future: http_manager.getSchedule(arguments["groupID"]),
+                future: http_manager.getSchedule(arguments["id"]),
                 builder: (context, v) {
                   if (v.hasData) {
                     return FadeIndexedStack(
@@ -73,7 +74,7 @@ class _MainWidgetState extends State<MainWidget> {
                         index: _currentPageIndex,
                         children: [
                           SchedulePage(schedule: v.data!),
-                          const ExamsPage(),
+                          ExamsPage(schedule: v.data!),
                           SummarizePage(schedule: v.data!),
                         ]);
                   }
@@ -89,36 +90,6 @@ class _MainWidgetState extends State<MainWidget> {
               selectedIndex: _currentPageIndex, onDestSelected: onDestChange),
     );
   }
-
-  // Future<void> _dialogBuilder(BuildContext context, String defaultValue) {
-  //   TextEditingController controller = TextEditingController(
-  //     text: defaultValue,
-  //   );
-  //
-  //   return showDialog<void>(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Edit content'),
-  //         content: TextField(
-  //           controller: controller,
-  //           decoration: const InputDecoration(
-  //             border: OutlineInputBorder(),
-  //             labelText: "Group",
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: const Text('Submit'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 }
 
 class Destination {
@@ -248,6 +219,9 @@ class _GroupHandlerState extends State<GroupHandler> {
 
   @override
   Widget build(BuildContext context) {
+    final arguments = (ModalRoute.of(context)?.settings.arguments ??
+        <String, dynamic>{}) as Map;
+
     return SearchAnchor(
       builder: (context, controller) {
         return IconButton(
@@ -267,13 +241,13 @@ class _GroupHandlerState extends State<GroupHandler> {
         }
 
         _lastOptions = List<ListTile>.generate(options.length, (index) {
-          final String item = options[index]['group'];
+          final String item = options[index]['group_name'];
+          String groupID = options[index]['kai_id'].toString();
 
           return ListTile(
             title: Text(item),
             onTap: () async {
               var prefs = await SharedPreferences.getInstance();
-              String groupID = options[index]['id'].toString();
 
               await prefs.setString("GroupID", groupID);
               await prefs.setString("id", item);
@@ -283,6 +257,22 @@ class _GroupHandlerState extends State<GroupHandler> {
                     context, "/MainPage", (_) => false,
                     arguments: {"groupID": groupID, "id": item});
               }
+            },
+            onLongPress: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CompareWidget(),
+                  settings: RouteSettings(
+                    arguments: {
+                      "groupID": groupID,
+                      "id": item,
+                      'originalID': arguments["id"],
+                      'originalGroupID': arguments['groupID']
+                    }
+                  ),
+                )
+              );
             },
           );
         });

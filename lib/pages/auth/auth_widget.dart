@@ -149,13 +149,14 @@ class _AuthWidgetState extends State<AuthWidget> {
                 },
                 itemBuilder: (context, map) {
                   return ListTile(
-                      title: Text(map['group']),
+                      title: Text(map['group_name']),
                   );
                 },
                 onSelected: (dynamic value) {
                   //_controller.text = value['group'];
-                  _searchingWithQuery = value['group'];
-                  String groupID = value['id'].toString();
+                  print(value);
+                  _searchingWithQuery = value['group_name'];
+                  String groupID = value['kai_id'].toString();
 
                   prefs.setString("GroupID", groupID);
                   prefs.setString("id", _searchingWithQuery!);
