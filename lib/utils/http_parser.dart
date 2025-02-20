@@ -7,6 +7,7 @@ Future<List<dynamic>> getGroups(String group) async {
   final url = Uri.parse("https://api.pocket-kai.ru/group/suggest?group_name=$group");
 
   final headers = {
+    'Access-Control-Allow-Origin': '*',
     'Content-Type': 'text/plain'
   };
 

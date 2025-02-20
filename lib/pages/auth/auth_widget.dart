@@ -26,18 +26,6 @@ class _AuthWidgetState extends State<AuthWidget> {
   int pageIndex = 0;
   PageController controller = PageController(initialPage: 0);
 
-  // void _submitPressed(var readyInstance) {
-  //   if (!_formKey.currentState!.validate()) {
-  //     return;
-  //   }
-  //
-  //   readyInstance.setString("GroupID", _groupID);
-  //   readyInstance.setString("id", _searchingWithQuery!);
-  //
-  //   Navigator.pushReplacementNamed(context, "/MainPage",
-  //       arguments: {"groupID": _groupID, "id": _searchingWithQuery!});
-  // }
-
   @override
   Widget build(BuildContext context) {
     void changePage() {
@@ -153,8 +141,6 @@ class _AuthWidgetState extends State<AuthWidget> {
                   );
                 },
                 onSelected: (dynamic value) {
-                  //_controller.text = value['group'];
-                  print(value);
                   _searchingWithQuery = value['group_name'];
                   String groupID = value['kai_id'].toString();
 
@@ -165,14 +151,6 @@ class _AuthWidgetState extends State<AuthWidget> {
                       arguments: {"groupID": groupID, "id": _searchingWithQuery!});
                 },
               ),
-              // const SizedBox(height: 10),
-              // const ElevatedButton(
-              //   onPressed: null,
-              //   // onPressed: () {
-              //   //   _submitPressed(prefs);
-              //   // },
-              //   child: Text("Submit"),
-              // ),
               const Spacer(
                 flex: 11,
               ),

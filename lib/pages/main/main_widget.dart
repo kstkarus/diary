@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:diary/pages/main/summarize/compare_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,12 +44,6 @@ class _MainWidgetState extends State<MainWidget> {
                   },
                   icon: const Icon(Icons.settings),
                 ),
-                // IconButton(
-                //   onPressed: () {
-                //     AdaptiveTheme.of(context).toggleThemeMode();
-                //   },
-                //   icon: getThemeIcon(context),
-                // ),
               ],
       ),
       body: Row(
@@ -217,6 +213,7 @@ class _GroupHandlerState extends State<GroupHandler> {
   String? _searchingWithQuery;
   late List<Widget> _lastOptions;
 
+
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ??
@@ -235,17 +232,40 @@ class _GroupHandlerState extends State<GroupHandler> {
         _searchingWithQuery = controller.text;
 
         final List<dynamic> options = (await getGroups(_searchingWithQuery!));
+        final prefs = await SharedPreferences.getInstance();
+        List<String>? cached;
+
+        // добавление истории поиска в список групп
+        if (_searchingWithQuery == null || _searchingWithQuery!.isEmpty) {
+          cached = prefs.getStringList('lastGroup');
+
+          cached?.forEach((String str) {
+            options.insert(0, jsonDecode(str));
+          });
+        }
 
         if (_searchingWithQuery != controller.text || options.isEmpty) {
           return _lastOptions;
         }
 
-        _lastOptions = List<ListTile>.generate(options.length, (index) {
-          final String item = options[index]['group_name'];
+        _lastOptions = List<Widget>.generate(options.length, (index) {
+          final String item = options[index]['group_name'].toString();
           String groupID = options[index]['kai_id'].toString();
+          bool? isHistory = options[index]['history'];
 
           return ListTile(
             title: Text(item),
+            leading: isHistory != null ? Icon(Icons.history) : null,
+            trailing: isHistory != null ? InkWell(
+              child: Icon(Icons.cancel_outlined),
+              onTap: () {
+                cached!.removeAt(cached.length - index - 1);
+
+                prefs.setStringList('lastGroup', cached);
+
+                // TODO: не удаляются сразу недавние группы
+              },
+            ) : null,
             onTap: () async {
               var prefs = await SharedPreferences.getInstance();
 
@@ -253,6 +273,25 @@ class _GroupHandlerState extends State<GroupHandler> {
               await prefs.setString("id", item);
 
               if (context.mounted) {
+                List<String>? cached = prefs.getStringList('lastGroup');
+
+                String cache = '{"kai_id": $groupID, "group_name": $item, "history": true}';
+
+                if (cached != null) {
+                  cached.add(cache);
+                }
+                else {
+                  cached = [cache];
+                }
+
+                cached = cached.reversed.toSet().toList().reversed.toList();
+
+                if (cached.length > 3) {
+                  cached.removeAt(0);
+                }
+
+                await prefs.setStringList('lastGroup', cached);
+
                 Navigator.pushNamedAndRemoveUntil(
                     context, "/MainPage", (_) => false,
                     arguments: {"groupID": groupID, "id": item});
